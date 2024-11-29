@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flowers by Grant Donson</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: serif;
+        }
+
+        body {
+            background-color: #f5f3e6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .profile-icon {
+            font-size: 30px;
+            cursor: pointer;
+            margin-right: auto;
+            text-decoration: none;
+            color: #6f4f28;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #6f4f28;
+            font-weight: bold;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .title {
+            font-size: 34px;
+            font-weight: bold;
+            color: #6f4f28;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px #bbb2a8;
+            }
+
+            to {
+                text-shadow: 4px 4px #afa99f;
+            }
+        }
+
+        /* Welcome Message */
+        .welcome-message {
+            text-align: center;
+            font-size: 18px;
+            color: #6f4f28;
+            margin-bottom: 20px;
+        }
+
+        /* Flower Cards */
+        .flower-scroll {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            position: relative;
+        }
+
+        .flower-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .flower-card {
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            min-width: 280px;
+            max-width: 280px;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .flower-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .flower-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .flower-details {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .flower-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #6f4f28;
+            margin-bottom: 8px;
+        }
+
+        .flower-price {
+            font-size: 16px;
+            color: #ff8c00;
+            margin-bottom: 10px;
+        }
+
+        .action-btn {
+            background-color: #ff8c00;
+            color: #fff;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background-color: #6f4f28;
+        }
+
+        /* Scroll Arrow */
+        .scroll-arrow {
+            display: none;
+            position: absolute;
+            font-size: 30px;
+            color: #6f4f28;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .scroll-arrow.right {
+            right: 10px;
+        }
+
+        .scroll-arrow.visible {
+            display: block;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #6f4f28;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="profile.html" class="profile-icon">👤</a>
+        <nav class="nav-links">
+            <a href="index.html">Home</a> |
+            <a href="contact.html">Contact Us</a>
+        </nav>
+    </div>
+
+<!-- Title -->
+<h1 class="title">Flowers by Grant </h1>
+
+
+    <!-- Scrollable Flower Cards -->
+    <div class="flower-scroll">
+        <span class="scroll-arrow right">&#x25B6;</span>
+        <div class="flower-container" id="flower-container">
+            <!-- Flower Card 1 -->
+            <div class="flower-card">
+                <img src="b2.jpg" alt="Rose" class="flower-image">
+                <div class="flower-details">
+                    <h3 class="flower-title">Red Rose Bouquet</h3>
+                    <p class="flower-price">R950.00</p>
+                    <button class="action-btn" onclick="buyNow('Red Rose Bouquet')">Buy Now</button>
+                    <button class="action-btn" onclick="virtualFlower('Red Rose Bouquet')">Virtual Flower 🌸</button>
+                </div>
+            </div>
+            <!-- Flower Card 2 -->
+            <div class="flower-card">
+                <img src="b3.jpg" alt="Tulips" class="flower-image">
+                <div class="flower-details">
+                    <h3 class="flower-title">White Rose Heart</h3>
+                    <p class="flower-price">R1,180.00</p>
+                    <button class="action-btn" onclick="buyNow('White Rose Heart')">Buy Now</button>
+                    <button class="action-btn" onclick="virtualFlower('White Rose Heart')">Virtual Flower 🌷</button>
+                </div>
+            </div>
+            <!-- Flower Card 3 -->
+            <div class="flower-card">
+                <img src="b4.jpg" alt="Sunflowers" class="flower-image">
+                <div class="flower-details">
+                    <h3 class="flower-title">White Rose Heart</h3>
+                    <p class="flower-price">R1000.00</p>
+                    <button class="action-btn" onclick="buyNow('White Rose Heart')">Buy Now</button>
+                    <button class="action-btn" onclick="virtualFlower('White Rose Heart')">Virtual Flower 🌻</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">© Flowers by Grant 2024</div>
+
+    <!-- JavaScript -->
+    <script>
+        const flowerContainer = document.getElementById('flower-container');
+        const scrollArrow = document.querySelector('.scroll-arrow');
+
+        flowerContainer.addEventListener('scroll', () => {
+            if (flowerContainer.scrollLeft > 0) {
+                scrollArrow.classList.remove('visible');
+            } else {
+                scrollArrow.classList.add('visible');
+            }
+        });
+
+        function buyNow(flowerName) {
+            // Navigate to the order page with the selected flower name as a query parameter
+            window.location.href = `order.html?flower=${encodeURIComponent(flowerName)}`;
+        }
+
+        function virtualFlower(flowerName) {
+            alert(`You selected the Virtual Flower option for: ${flowerName}`);
+            window.location.href = 'virtual-flower.html';
+        }
+    </script>
+</body>
+
+</html>
+
+
+

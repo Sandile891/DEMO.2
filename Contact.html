@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: serif;
+        }
+
+        body {
+            background-color: #fff7e6; /* Cream White background */
+            color: #3e3e3e; /* Dark Brown text */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Header Section */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            position: absolute;
+            top: 10px;
+            padding: 0 20px;
+        }
+
+        .profile-icon {
+            font-size: 24px;
+            cursor: pointer;
+            color: #f6a700; /* Orange color */
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #f6a700;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Title Section */
+        .title {
+            font-size: 28px;
+            color: #3e3e3e;
+            margin-top: 100px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Chatbot Section */
+        .chatbot-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .chatbot-container h3 {
+            font-size: 24px;
+            color: #f6a700;
+            margin-bottom: 15px;
+        }
+
+        #chatbox {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            background-color: #f7f7f7;
+            overflow-y: auto;
+            font-size: 16px;
+            color: #3e3e3e;
+        }
+
+        #chatbox .user-message,
+        #chatbox .bot-message {
+            margin: 10px 0;
+        }
+
+        .user-message {
+            text-align: right;
+            color: #f6a700;
+        }
+
+        .bot-message {
+            text-align: left;
+            color: #3e3e3e;
+        }
+
+        .chat-input-container {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .chat-input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .chat-send-button {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background-color: #f6a700;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <a href="profile.html" class="profile-icon">👤</a>
+        <nav class="nav-links">
+            <a href="index.html">Home</a> |
+            <a href="contact.html">Contact Us</a>
+        </nav>
+    </div>
+
+    <!-- Title -->
+    <div class="title">Contact Us</div>
+
+    <!-- Chatbot Section -->
+    <div class="chatbot-container">
+        <h3>Chat with our Assistant</h3>
+        <div id="chatbox">
+            <div class="bot-message">Hello! How can I help you today?</div>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" id="userInput" class="chat-input" placeholder="Type your question here...">
+            <button class="chat-send-button" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <!-- Contact Details Section -->
+    <div class="contact-details">
+        <h4>Get in Touch</h4>
+        <div class="contact-item">
+            <strong>Phone:</strong> <a href="tel:+27 (0)72 959 0328">+27 72 959 0328</a>
+        </div>
+        <div class="contact-item">
+            <strong>Email:</strong> <a href="mailto:info@bygrantdonson.co.za">info@bygrantdonson.co.za</a>
+        </div>
+        <div class="contact-item">
+            <strong>WhatsApp:</strong> <a href="https://wa.me/+0729590328" target="_blank">Chat with us on WhatsApp</a>
+        </div>
+    </div>
+
+    <script>
+        const chatbotResponses = {
+            "what type of flowers are for sale?": "We have Roses, Pink Flowers, 100 Red Roses, 50 Red Roses, A Bright Surprise, A Colourful Celebration, and more!",
+            "what hampers?": "We offer: Hamper with wine, Hot Box: Champagne & Chocolate, Hot Box: Lina Rose & Champagne, and Hot Box: Rose & Lina Choca.",
+            "how much are red roses?": "Red Roses cost R500.",
+            "how much is the cheapest hamper?": "The cheapest hamper costs about R460."
+        };
+
+        function sendMessage() {
+            const userInput = document.getElementById('userInput').value.toLowerCase();
+            
+            if (userInput.trim() === "") return;
+
+            // Display the user's message
+            let userMessageDiv = document.createElement('div');
+            userMessageDiv.classList.add('user-message');
+            userMessageDiv.textContent = userInput;
+            document.getElementById('chatbox').appendChild(userMessageDiv);
+
+            // Generate chatbot response
+            let botMessage = chatbotResponses[userInput] || "Sorry, I don't understand that question. Please try asking something else.";
+            
+            let botMessageDiv = document.createElement('div');
+            botMessageDiv.classList.add('bot-message');
+            botMessageDiv.textContent = botMessage;
+            document.getElementById('chatbox').appendChild(botMessageDiv);
+
+            // Scroll to the bottom of the chatbox
+            document.getElementById('chatbox').scrollTop = document.getElementById('chatbox').scrollHeight;
+
+            // Clear the input field
+            document.getElementById('userInput').value = "";
+        }
+    </script>
+</body>
+
+</html>
