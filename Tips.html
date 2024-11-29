@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Care Tips</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #fffaf0; /* Light floral background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #3e3e3e; /* Dark grey text */
+        }
+
+        /* Header Section */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            position: absolute;
+            top: 10px;
+            padding: 0 20px;
+        }
+
+        .profile-icon {
+            font-size: 24px;
+            cursor: pointer;
+            color: #6f4f28; /* Teal color */
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgb(75, 62, 45);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Title */
+        .title {
+            font-size: 28px;
+            color: #6f4f28;
+            margin-top: 80px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Flower Tips Section */
+        .flower-tips-container {
+            width: 100%;
+            overflow-x: scroll;
+            display: flex;
+            gap: 20px;
+            padding-bottom: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .flower-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            width: 250px;
+            text-align: center;
+            padding: 15px;
+            transition: transform 0.3s ease;
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .flower-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .flower-card h3 {
+            font-size: 18px;
+            color: #3e3e3e;
+            margin: 10px 0;
+        }
+
+        .flower-card p {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        /* Hover Effect for Flower Cards */
+        .flower-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .flower-card .tip-button {
+            background-color: #6f4f28;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .flower-card .tip-button:hover {
+            background-color: #6f4f28;
+        }
+
+        /* Arrow for Scrolling */
+        .scroll-arrow {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #6f4f28;
+            cursor: pointer;
+            display: none;
+            z-index: 10;
+        }
+
+        .flower-tips-container:hover + .scroll-arrow {
+            display: block;
+        }
+
+        /* Footer Section (If needed) */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* Media Queries for Mobile Devices */
+        @media (max-width: 768px) {
+            .flower-card {
+                width: 200px;
+                padding: 12px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+            .flower-card h3 {
+                font-size: 16px;
+            }
+
+            .flower-card p {
+                font-size: 12px;
+            }
+
+            .flower-tips-container {
+                gap: 15px;
+            }
+
+            .scroll-arrow {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <a href="profile.html" class="profile-icon">👤</a>
+        <nav class="nav-links">
+            <a href="index.html">Home</a> |
+            <a href="contact.html">Contact Us</a>
+        </nav>
+    </div>
+
+    <!-- Title -->
+    <div class="title">Flower Care Tips</div>
+
+    <!-- Flower Care Tips Section -->
+    <div class="flower-tips-container">
+        <!-- Flower Card 1 -->
+        <div class="flower-card">
+            <img src="https://via.placeholder.com/250x150" alt="Rose">
+            <h3>Rose</h3>
+            <p>Keep your roses in a cool place with plenty of light. Water them every two days and change the water often.</p>
+            <button class="tip-button" onclick="alert('Tip: Roses last 7-10 days if cared for properly!')">See Tips</button>
+        </div>
+
+        <!-- Flower Card 2 -->
+        <div class="flower-card">
+            <img src="https://via.placeholder.com/250x150" alt="Pink Orchid">
+            <h3>Pink Orchid</h3>
+            <p>These flowers prefer cool temperatures. Trim the stems and keep the water fresh to make them last longer.</p>
+            <button class="tip-button" onclick="alert('Tip: Pink Orchid last 5-7 days!')">See Tips</button>
+        </div>
+
+        <!-- Flower Card 3 -->
+        <div class="flower-card">
+            <img src="https://via.placeholder.com/250x150" alt="White Bunch Roses">
+            <h3>White Bunch Roses</h3>
+            <p>Should be watered every 2-3 days. Keep them in a room temperature</p>
+            <button class="tip-button" onclick="alert('Tip: White Bunch Roses last 7-10 days with proper care!')">See Tips</button>
+        </div>
+
+        <!-- Flower Card 4 -->
+        <div class="flower-card">
+            <img src="https://via.placeholder.com/250x150" alt="A Pink Affair">
+            <h3>A Pink Affair</h3>
+            <p> Keep them away from direct sunlight.</p>
+            <button class="tip-button" onclick="alert('Tip: Pink Roses last around 5-7 days if cared for!')">See Tips</button>
+        </div>
+    </div>
+
+    <!-- Scroll Arrow -->
+    <div class="scroll-arrow" onclick="scrollFlowers()">➤</div>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>© 2024 Flower Care Tips. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Script for Scroll Arrow -->
+    <script>
+        // Scroll to the right when clicking the arrow
+        function scrollFlowers() {
+            const container = document.querySelector('.flower-tips-container');
+            container.scrollBy({
+                left: 300,
+                behavior: 'smooth'
+            });
+        }
+
+        // Hide arrow when no more content is available
+        const flowerContainer = document.querySelector('.flower-tips-container');
+        flowerContainer.addEventListener('scroll', function () {
+            const scrollWidth = flowerContainer.scrollWidth;
+            const scrollPosition = flowerContainer.scrollLeft + flowerContainer.offsetWidth;
+            const arrow = document.querySelector('.scroll-arrow');
+            if (scrollPosition >= scrollWidth) {
+                arrow.style.display = 'none';
+            } else {
+                arrow.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+
+</html>

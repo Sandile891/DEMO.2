@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Quiz</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+        }
+
+        body {
+            background-color: #f5f3e6; /* Creamy white */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .profile-icon {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: auto;
+            text-decoration: none;
+            color: #a0522d;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #8b4513;
+            font-weight: bold;
+        }
+
+        /* Title */
+        .title {
+            font-size: 28px;
+            color: #8b4513;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            max-width: 400px;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: #cc5500;
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .question {
+            font-size: 20px;
+            color: #8b4513;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .option-button {
+            padding: 12px;
+            background-color: #cc5500;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .option-button:hover {
+            transform: scale(1.05);
+            background-color: #b34700;
+        }
+
+        .result-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .result-container img {
+            width: 100%;
+            max-width: 250px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            font-size: 24px;
+            color: #8b4513;
+            margin-bottom: 15px;
+        }
+
+        .buy-button {
+            padding: 10px 20px;
+            background-color: #006400;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .buy-button:hover {
+            background-color: #004d00;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <a href="profile.html" class="profile-icon">👤</a>
+        <nav class="nav-links">
+            <a href="index.html">Home</a> |
+            <a href="contact.html">Contact Us</a>
+        </nav>
+    </div>
+
+    <!-- Title -->
+    <div class="title"> Discover Your Perfect Choice! </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- Quiz Container -->
+    <div class="quiz-container" id="quiz-container">
+        <div class="question" id="question">What's your favorite environment?</div>
+        <div class="options" id="options">
+            <button class="option-button" onclick="selectAnswer(1)">Outdoors & Nature</button>
+            <button class="option-button" onclick="selectAnswer(2)">Cozy & Relaxing</button>
+            <button class="option-button" onclick="selectAnswer(3)">Elegant & Sophisticated</button>
+        </div>
+    </div>
+
+    <!-- Result Section -->
+    <div class="result-container" id="result-container">
+        <img src="" alt="Recommended Product" id="result-image">
+        <h3 class="result-title" id="result-title"></h3>
+        <button class="buy-button" id="buy-button" onclick="placeOrder()">Buy Now</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What's your favorite color scheme?",
+                options: ["Bright & Vibrant", "Soft & Pastel", "Dark & Moody"]
+            },
+            {
+                question: "Which scent do you love the most?",
+                options: ["Fresh & Floral", "Woody & Earthy", "Sweet & Fruity"]
+            },
+            {
+                question: "How would you describe your ideal vibe?",
+                options: ["Adventurous & Free", "Cozy & Warm", "Chic & Modern"]
+            }
+        ];
+    
+        const results = [
+            { name: "Rose Bouquet", image: "b3.jpg", type: "flower" },
+            { name: "The Goodie Bag", image: "b2.jpg", type: "hampus" },
+            { name: "Orange Bunch Roses", image: "b3.jpg", type: "flower" },
+            { name: "Lindor & Lindt Wine Box", image: "b3.jpg", type: "hampus" }
+        ];
+    
+        let currentQuestion = 0;
+        let selectedAnswers = [];
+        let recommendedProduct = null;
+        function selectAnswer(answer) {
+            selectedAnswers.push(answer);
+            currentQuestion++;
+            updateProgress();
+    
+            if (currentQuestion < questions.length) {
+                displayQuestion();
+            } else {
+                showResult();
+            }
+        }
+    
+        function displayQuestion() {
+            document.getElementById('question').textContent = questions[currentQuestion].question;
+            const options = document.getElementById('options');
+            options.innerHTML = questions[currentQuestion].options.map(
+                (option, index) => `<button class="option-button" onclick="selectAnswer(${index + 1})">${option}</button>`
+            ).join('');
+        }
+    
+        function updateProgress() {
+            const progress = (currentQuestion / questions.length) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+        }
+    
+        function showResult() {
+            recommendedProduct = results[Math.floor(Math.random() * results.length)];
+            document.getElementById('result-image').src = recommendedProduct.image;
+            document.getElementById('result-title').textContent = `We recommend: ${recommendedProduct.name}`;
+            document.getElementById('result-container').style.display = 'flex';
+            document.getElementById('quiz-container').style.display = 'none';
+        }
+    
+        function placeOrder() {
+            // Redirect to the order page with the selected product as a query parameter
+            const orderPageUrl = `order.html?product=${encodeURIComponent(recommendedProduct.name)}`;
+            window.location.href = orderPageUrl;
+        }
+    
+        displayQuestion();
+    </script>
+</body>
+</html>
+

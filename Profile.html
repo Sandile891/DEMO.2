@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <!-- Google Sign-In -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: serif;
+            background-color: #f5f5dc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        /* Header Styling */
+        header {
+            width: 100%;
+            padding: 15px;
+            background-color: #f4efe3;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            color: #8b4513;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+        nav ul li a {
+            color: #8b4513;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        #logout {
+            display: none;
+            cursor: pointer;
+            background-color: #8b4513;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        #logout:hover {
+            background-color: #654321;
+        }
+        /* Profile Container */
+        .profile-container {
+            margin-top: 20px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        #user-details {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: none;
+        }
+        form {
+            margin-top: 20px;
+        }
+        input {
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 12px;
+            width: 100%;
+            background-color: #8b4513;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #654321;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <a href="index.html" class="logo">Home</a>
+        <nav>
+            <ul>
+                <li><a href="Contact.html">Contact Us</a></li>
+                <li><span id="logout">Logout</span></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Profile Section -->
+    <div class="profile-container">
+        <!-- Google Sign-In Button -->
+        <div id="signin-button"></div>
+        
+        <!-- User Details -->
+        <div id="user-details">
+            <h2>Welcome, <span id="user-name"></span></h2>
+            <p>Email: <span id="user-email"></span></p>
+            <form id="payment-form">
+                <label for="card-number">Bank Card Number:</label>
+                <input type="text" id="card-number" placeholder="Enter your card number">
+                <button type="submit">Save Card Details</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const signinButton = document.getElementById('signin-button');
+            const userDetails = document.getElementById('user-details');
+            const userName = document.getElementById('user-name');
+            const userEmail = document.getElementById('user-email');
+            const logoutButton = document.getElementById('logout');
+            
+            // Google Sign-In Configuration
+            google.accounts.id.initialize({
+                client_id: 'YOUR_GOOGLE_CLIENT_ID',
+                callback: handleCredentialResponse
+            });
+
+            google.accounts.id.renderButton(signinButton, {
+                theme: 'outline',
+                size: 'large'
+            });
+
+            function handleCredentialResponse(response) {
+                const data = jwt_decode(response.credential);
+                userName.textContent = data.name;
+                userEmail.textContent = data.email;
+
+                // Show user details and hide sign-in button
+                signinButton.style.display = 'none';
+                userDetails.style.display = 'block';
+                logoutButton.style.display = 'inline-block';
+            }
+
+            logoutButton.addEventListener('click', function() {
+                userDetails.style.display = 'none';
+                signinButton.style.display = 'block';
+                logoutButton.style.display = 'none';
+                localStorage.clear();
+                alert('You have logged out.');
+            });
+
+            // Payment Form Handling
+            const paymentForm = document.getElementById('payment-form');
+            paymentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const cardNumber = document.getElementById('card-number').value;
+                if (cardNumber) {
+                    localStorage.setItem('cardNumber', cardNumber);
+                    alert('Card details saved successfully!');
+                }
+            });
+
+            // Load saved card details if available
+            const savedCard = localStorage.getItem('cardNumber');
+            if (savedCard) {
+                document.getElementById('card-number').value = savedCard;
+            }
+        };
+    </script>
+    <!-- Decode JWT Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+</body>
+</html>

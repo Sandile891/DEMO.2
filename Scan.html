@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="javas.js"></script>
+    <title>QR Code Scanner</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+        }
+
+        body {
+            background-color: #f5f3e6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .profile-icon {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: auto;
+            text-decoration: none;
+            color: #a0522d;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #8b4513;
+            font-weight: bold;
+        }
+
+        /* Page Title */
+        .title {
+            font-size: 28px;
+            color: #8b4513;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* QR Code Scanner */
+        #qr-reader {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 20px;
+        }
+
+        /* Video Player */
+        .video-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .video-container video {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .home-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #006400;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .home-button:hover {
+            background-color: #004d00;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <a href="profile.html" class="profile-icon">👤</a>
+        <nav class="nav-links">
+            <a href="index.html">Home</a> |
+            <a href="contact.html">Contact Us</a>
+        </nav>
+    </div>
+
+    <!-- Title -->
+    <div class="title">📦 Scan Your Package QR Code </div>
+
+    <!-- QR Code Scanner -->
+    <div id="qr-reader"></div>
+
+    <!-- Video Player -->
+    <div class="video-container" id="video-container">
+        <h3>Your Special Message 🎥</h3>
+        <video id="message-video" controls></video>
+        <button class="home-button" onclick="goHome()">Go Home</button>
+    </div>
+
+    <!-- Include the HTML5 QR Code Scanner Library -->
+    <script src="html5-qrcode.min.js.js"></script>
+
+    <script>
+        // Initialize the QR Code Scanner
+        const qrCodeScanner = new Html5Qrcode("qr-reader");
+
+        function onScanSuccess(decodedText) {
+            // Hide the QR code scanner
+            document.getElementById('qr-reader').style.display = 'none';
+
+            // Show the video player container
+            const videoContainer = document.getElementById('video-container');
+            videoContainer.style.display = 'flex';
+
+            // Set the video source to the decoded URL (assuming it's a video link)
+            const videoElement = document.getElementById('message-video');
+            videoElement.src = decodedText;
+            videoElement.load();
+            videoElement.play();
+        }
+
+        function onScanError(errorMessage) {
+            console.error('QR Code scan error:', errorMessage);
+        }
+
+        // Start the scanner
+        qrCodeScanner.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: 250
+            },
+            onScanSuccess,
+            onScanError
+        );
+
+        // Function to redirect to home
+        function goHome() {
+            window.location.href = "index.html";
+        }
+    </script>
+
+<script src="javas.js"></script>
+
+</body>
+
+<body>
+    <!-- Instructions Overlay -->
+    <div id="instructions">Point your camera at a flat surface to view the flower arrangement.</div>
+
+    <!-- Buttons -->
+    <!--button id="start-ar-btn">Try Virtual Flower 🌸</button-->
+    <button id="stop-ar-btn" class="action-btn">✖️</button>
+    <button id="home-btn" class="index.html">🏠</button>
+        <a-camera gps-camera rotation-reader></a-camera>
+    </a-scene-->
+</body>
+

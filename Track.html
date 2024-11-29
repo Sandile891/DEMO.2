@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Order Tracking</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+        }
+
+        body {
+            background-color: #f5f3e6; /* Cream white */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: #8b4513; /* Dark brown */
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .profile-icon {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: auto;
+            text-decoration: none;
+            color: #a0522d; /* Dark brown */
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px; /* Creates space between the links */
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #8b4513; /* Dark brown */
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Title */
+        .title {
+            font-size: 26px;
+            color: #8b4513; /* Dark brown */
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Tracking Container */
+        .tracking-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .tracking-status {
+            font-size: 20px;
+            color: #cc5500; /* Dark orange */
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tracking-map {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            background-color: #e6e6e6; /* Placeholder background */
+            margin-bottom: 15px;
+        }
+
+        .notification {
+            background-color: #cc5500;
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        /* Innovative Button Design */
+        .buy-button {
+            padding: 12px 25px;
+            background-color: #cc5500; /* Dark orange */
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .buy-button:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background-color: #b34700;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .buy-button:hover {
+            background-color: #b34700;
+        }
+
+        .buy-button:hover:before {
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .title {
+                font-size: 22px;
+            }
+
+            .tracking-container {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .tracking-status {
+                font-size: 18px;
+            }
+
+            .tracking-map {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <a href="profile.html" class="profile-icon">👤</a>
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="contact.html">Contact Us</a>
+        </nav>
+    </div>
+
+    <!-- Title -->
+    <div class="title">Live Order Tracking</div>
+
+    <!-- Tracking Info -->
+    <div class="tracking-container">
+        <div class="tracking-status">Your order is on the way! 🚚</div>
+        <!-- Placeholder for Google Map -->
+        <div id="map" class="tracking-map"></div>
+        <button class="buy-button" onclick="showNotification()">Show Delivery Status</button>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">Your order has arrived! 🎉</div>
+
+    <!-- Map Integration (Dummy, replace with actual API for Google Maps) -->
+    <script>
+        function showNotification() {
+            // Simulate an order arrival
+            const notification = document.getElementById('notification');
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000); // Hide after 5 seconds
+        }
+
+        // Example Google Maps API Initialization (just a placeholder)
+        function initMap() {
+            const mapOptions = {
+                center: { lat: -34.397, lng: 150.644 },
+                zoom: 15,
+            };
+            const map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        }
+
+        // Load Google Maps API script dynamically
+        window.onload = function () {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap`;
+            script.async = true;
+            document.body.appendChild(script);
+        }
+    </script>
+
+</body>
+
+</html>
+
+
+
+

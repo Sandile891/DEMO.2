@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Your Product</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: serif;
+        }
+
+        body {
+            background-color: #fff7e6; /* Cream White background */
+            color: #3e3e3e; /* Dark Brown text */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Header Section */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            position: absolute;
+            top: 10px;
+            padding: 0 20px;
+            margin-right: 20px; /* Adjust the value for more or less space */
+        }
+
+        .profile-icon {
+            font-size: 24px;
+            cursor: pointer;
+            color: #d9733b; /* Orange color */
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #d9733b;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Title Section */
+        .title {
+            font-size: 28px;
+            color: #3e3e3e;
+            margin-top: 80px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Product Selection Dropdown */
+        .product-selector {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .product-selector select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            color: #333;
+        }
+
+        /* Scrollable Cards */
+        .product-cards {
+            display: none;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 10px;
+            scroll-snap-type: x mandatory;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .product-card {
+            flex: 0 0 auto;
+            scroll-snap-align: center;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            text-align: center;
+            padding: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .product-card h3 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .product-card input[type="checkbox"] {
+            margin-top: 10px;
+            transform: scale(1.5);
+            cursor: pointer;
+        }
+
+        /* Hide scrollbar */
+        .product-cards::-webkit-scrollbar {
+            display: none;
+        }
+
+        .product-cards {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Order Button */
+        .order-button {
+            background-color: #f6a700;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+            display: none;
+        }
+
+        .order-button:hover {
+            background-color: #e67e00;
+        }
+
+        /* Payment Details */
+        .payment-details {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 20px;
+            gap: 15px;
+        }
+
+        .payment-details input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        .track-order {
+            margin-top: 20px;
+            color: #f6a700;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <a href="profile.html" class="profile-icon">👤</a>
+        <nav class="nav-links">
+            <a href="index.html">Home</a> |
+            <a href="contact.html">Contact Us</a>
+        </nav>
+    </div>
+
+    <!-- Title -->
+    <div class="title">Order Your Product</div>
+
+    <!-- Product Selection Dropdown -->
+    <div class="product-selector">
+        <select id="productType" onchange="showProducts()">
+            <option value="">Select Product Type</option>
+            <option value="flowers">Flowers</option>
+            <option value="hampers">Hampers</option>
+        </select>
+    </div>
+
+    <!-- Scrollable Product Cards -->
+    <div class="product-cards" id="flowers">
+        <div class="product-card">
+            <img src="https://via.placeholder.com/200x150" alt="Orange Bunch Roses">
+            <h3>Orange Bunch Roses</h3>
+            <input type="checkbox" data-product="Orange Bunch Roses" onchange="togglePayment()">
+        </div>
+        <div class="product-card">
+            <img src="https://via.placeholder.com/200x150" alt="Gift Box with Pink Roses">
+            <h3>Gift Box with Pink Roses</h3>
+            <input type="checkbox" data-product="Gift Box with Pink Roses" onchange="togglePayment()">
+        </div>
+        <div class="product-card">
+            <img src="https://via.placeholder.com/200x150" alt="Red Roses">
+            <h3>Red Roses</h3>
+            <input type="checkbox" data-product="Red Roses" onchange="togglePayment()">
+        </div>
+    </div>
+
+    <div class="product-cards" id="hampers">
+        <div class="product-card">
+            <img src="https://via.placeholder.com/200x150" alt="Hot Box: Champagne & Chocolate">
+            <h3>Hot Box: Champagne & Chocolate</h3>
+            <input type="checkbox" data-product="Hot Box: Champagne & Chocolate" onchange="togglePayment()">
+        </div>
+        <div class="product-card">
+            <img src="https://via.placeholder.com/200x150" alt="Coffee Gift Hamper">
+            <h3>Coffee Gift Hamper</h3>
+            <input type="checkbox" data-product="Coffee Gift Hamper" onchange="togglePayment()">
+        </div>
+        <div class="product-card">
+            <img src="https://via.placeholder.com/200x150" alt="Hot Box: Lina Rose & champagne">
+            <h3>Hot Box: Lina Rose & champagne</h3>
+            <input type="checkbox" data-product="Hot Box: Lina Rose & champagne" onchange="togglePayment()">
+        </div>
+    </div>
+
+    <!-- Payment Details -->
+    <div class="payment-details" id="paymentDetails">
+        <input type="text" id="userAddress" placeholder="Delivery Address">
+        <input type="text" id="cardNumber" placeholder="Card Number">
+        <input type="text" id="cvv" placeholder="CVV">
+    </div>
+
+    <!-- Order Button -->
+    <button class="order-button" id="orderButton" onclick="processOrder()">Place Order</button>
+
+    <div class="track-order">You can track your order here!</div>
+
+    <script>
+        function showProducts() {
+            let productType = document.getElementById('productType').value;
+            document.querySelectorAll('.product-cards').forEach(section => section.style.display = 'none');
+            if (productType) document.getElementById(productType).style.display = 'flex';
+        }
+
+        function togglePayment() {
+            const selectedProducts = document.querySelectorAll('.product-cards input[type="checkbox"]:checked');
+            const paymentDetails = document.getElementById('paymentDetails');
+            const orderButton = document.getElementById('orderButton');
+
+            if (selectedProducts.length > 0) {
+                paymentDetails.style.display = 'flex';
+                orderButton.style.display = 'block';
+            } else {
+                paymentDetails.style.display = 'none';
+                orderButton.style.display = 'none';
+            }
+        }
+
+        function processOrder() {
+            const address = document.getElementById('userAddress').value;
+            const cardNumber = document.getElementById('cardNumber').value;
+            const cvv = document.getElementById('cvv').value;
+
+            if (!address || !cardNumber || !cvv) {
+                alert('Please fill in all payment details!');
+                return;
+            }
+
+            alert('Order placed successfully!');
+        }
+    </script>
+</body>
+
+</html>

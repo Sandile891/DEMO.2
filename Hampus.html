@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hampus</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+        }
+        
+        body {
+            background-color: #f5f3e6; /* Cream white */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .profile-icon {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: auto;
+            text-decoration: none;
+            color: #a0522d; /* Dark brown */
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #8b4513; /* Dark brown */
+            font-weight: bold;
+        }
+        
+        /* Title */
+        .title {
+            font-size: 26px;
+            color: #8b4513; /* Dark brown */
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        /* Product Cards */
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 100%;
+        }
+        
+        .product-card {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .product-card img {
+            width: 100%;
+            max-width: 250px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: transform 0.3s;
+        }
+        
+        .product-card img:hover {
+            transform: scale(1.05);
+        }
+
+        .product-title {
+            font-size: 20px;
+            color: #8b4513; /* Dark brown */
+            margin-bottom: 10px;
+        }
+        
+        .product-description {
+            font-size: 15px;
+            color: #6a5d44; /* Light brown */
+            text-align: center;
+        }
+        
+        .buy-button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            background-color: #cc5500; /* Dark orange */
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .buy-button:hover {
+            background-color: #b34700; /* Darker shade */
+        }
+
+        /* Zoomable Image */
+        .zoomable {
+            touch-action: pinch-zoom;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <a href="profile.html" class="profile-icon">👤</a>
+        <nav class="nav-links">
+            <a href="index.html">Home</a> |
+            <a href="contact.html">Contact Us</a>
+        </nav>
+    </div>
+
+    <!-- Title -->
+    <div class="title">Hampus Products</div>
+
+    <!-- Cards Section -->
+    <div class="cards-container">
+        <!-- Product Card 1 -->
+        <div class="product-card">
+            <img src="b3.jpg" alt="Hampus Product 1" class="zoomable">
+            <h3 class="product-title">Hot Box: Lina Rose & champagne</h3>
+            <p class="product-description">Roses, champers and Ferrero Rocher all in one.</p>
+            <button class="buy-button" onclick="selectProduct('Hot Box', 'Lina Rose & champagne')">Buy Now</button>
+        </div>
+
+        <!-- Product Card 2 -->
+        <div class="product-card">
+            <img src="b2.jpg" alt="Hampus Product 2" class="zoomable">
+            <h3 class="product-title">Hot Box: Champagne & Chocolate</h3>
+            <p class="product-description">Another amazing Hampus product that you will love!</p>
+            <button class="buy-button" onclick="selectProduct('Hot Box', 'Champagne & Chocolate')">Buy Now</button>
+        </div>
+
+        <!-- Product Card 3 -->
+        <div class="product-card">
+            <img src="b1.jpg" alt="Hampus Product 3" class="zoomable">
+            <h3 class="product-title">Coffee Gift Hamper</h3>
+            <p class="product-description">The superb gift hamper for the coffee lover.</p>
+            <button class="buy-button" onclick="selectProduct('Gift Hamper', 'Coffee Gift Hamper')">Buy Now</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to handle product selection
+        function selectProduct(productType, productName) {
+            localStorage.setItem("selectedProductType", productType);
+            localStorage.setItem("selectedProductName", productName);
+            window.location.href = "order.html";
+        }
+    </script>
+</body>
+</html>
+
+
+

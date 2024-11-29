@@ -1,0 +1,281 @@
+/* General Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: serif;
+}
+
+body {
+    background-color: #e6d9df;
+    color: #3b2b24;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+    overflow-x: hidden;
+}
+
+/* Header Styling */
+header {
+    position: relative;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+    overflow: hidden;
+}
+
+.video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.header-content {
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.logo {
+    width: 80px;
+    margin-bottom: 10px;
+}
+
+nav.nav-links {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+nav.nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    transition: color 0.3s;
+}
+
+nav.nav-links a:hover {
+    color: #ff7f50;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.header-buttons button {
+    padding: 10px 20px;
+    background-color: #ff7f50;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.header-buttons button:hover {
+    background-color: #ff6347;
+    transform: translateY(-5px);
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    background-color: #e6d9df;
+    padding: 30px 15px;
+    border-radius: 15px;
+}
+
+.hero h2 {
+    font-size: 28px;
+}
+
+.hero button {
+    background-color: #bf9a7a;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.hero button:hover {
+    background-color: #a97a5b;
+}
+
+/* Popular Products Section */
+.popular {
+    margin: 20px 0;
+}
+
+.popular h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.popular-cards {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding-bottom: 10px;
+    scroll-behavior: smooth;
+}
+
+.product-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    max-width: 200px;
+    flex-shrink: 0;
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.buy-btn {
+    background-color: #a97a5b;
+    color: white;
+    padding: 10px;
+    border-radius: 15px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.buy-btn:hover {
+    background-color: #7a5444;
+}
+
+/* Footer Styling */
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #3b2b24;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px;
+    color: white;
+    z-index: 10;
+}
+
+.footer-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.footer-icon:hover {
+    transform: scale(1.1);
+}
+
+.footer-icon-large {
+    font-size: 1.5em;
+}
+
+.qr-code img {
+    width: 40px;
+    margin-top: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header {
+        height: 60vh;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .popular-cards {
+        gap: 10px;
+    }
+
+    .product-card {
+        min-width: 150px;
+    }
+
+    .hero h2 {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h2 {
+        font-size: 20px;
+    }
+
+    .product-card {
+        min-width: 120px;
+    }
+
+    .header-buttons button {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+
+    footer {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+}
+
+.profile-icon {
+    position: absolute;
+    left: 10px; /* Adjust as needed */
+    top: 10px;  /* Adjust as needed */
+    font-size: 24px;
+    text-decoration: none;
+    color: #fff;
+    z-index: 10; /* Ensure it stays above other elements */
+}
+ 
+
+
+   

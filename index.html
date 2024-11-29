@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovative Flower Store</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="javas.js" defer></script>
+    <header>
+        <div class="video-container">
+            <a href="Profile.html" class="profile-icon">👤</a>
+            <video src="flowers.mp4" autoplay muted loop playsinline></video>
+            <div class="overlay"></div>
+        </div>
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="logo.jpg" alt="Flower Store Logo" class="logo">
+                <h1>Flowers by Grant</h1>
+            </div>
+            <nav class="nav-links">
+                <a href="Hampus.html">Hampus</a>
+                <a href="Quiz.html">Quiz</a>
+                <a href="Scan.html">Scan QR Code</a>
+                <a href="Flowers.html">Flowers</a>
+                <a href="ar.html">Virtual Flowers</a>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+     <section class="hero">
+    <div class="header-buttons">
+        <button onclick="location.href='Order.html'">Shop Now</button>
+    </div>
+    </section>
+
+    <section class="hero">
+        <h2>Brighten Your Day with Our Bouquets</h2>
+        <p>Fresh flowers delivered to your door.</p>
+    </section>
+
+    <!--Popular Products Section -->
+    <section id="popular" class="popular">
+        <h2>Most Popular</h2>
+        <div class="popular-cards">
+            <div class="product-card">
+                <img src="b1.jpg" alt="Flower 1">
+                <p class="title">A Bright Surprise</p>
+                <p class="description">A vibrant mix of flowers.</p>
+                <p class="price">R850</p>
+                <button class="buy-btn">Buy Now</button>
+            </div>
+            <div class="product-card">
+                <img src="b2.jpg" alt="Flower 2">
+                <p class="title">50 Red Roses</p>
+                <p class="description">Perfect for a special someone.</p>
+                <p class="price">R400</p>
+                <button class="buy-btn">Buy Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="footer-icon" onclick="location.href='Track.html'">
+            📍<span>Track</span>
+        </div>
+        <div class="footer-icon" onclick="location.href='Tips.html'">
+            💡<span>Tips</span>
+        </div>
+        <div class="footer-icon-large" onclick="location.href='Order.html'">
+            🛒<span>Order</span>
+        </div>
+        <div class="footer-icon" onclick="location.href='Contact.html'">
+            💬<span>Contact Us</span>
+        </div>
+    </footer>
+
+
+    <!-- Link Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!- Register Service Worker >
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then((registration) => {
+                console.log('Service Worker registered:', registration);
+            })
+            .catch((error) => {
+                console.log('Service Worker registration failed:', error);
+            });
+    }
+</script>
+
+</body>
