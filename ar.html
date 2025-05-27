@@ -1,93 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flowers By Grant Donson - AR Try-On</title>
-    <!-- A-Frame and AR.js Libraries -->
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-gesture-detector@5.0.0/dist/aframe-gesture-detector.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
-    <script src="styles.css"></script>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: serif;
-            background-color: #fff6ff;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flowers By Grant Donson - AR Try-On</title>
 
-        #ar-container {
-            display: block;
-            position: relative;
-            width: 100%;
-            height: 100vh;
-        }
+  <!-- A-Frame and AR.js Libraries -->
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-gesture-detector@5.0.0/dist/aframe-gesture-detector.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-        a-scene {
-            width: 100%;
-            height: 100%;
-        }
-    </style>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: serif;
+      background-color: #fff6ff;
+    }
+
+    #ar-container {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+    }
+
+    a-scene {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
 
 <body>
-    <!-- AR Container -->
-    <div id="ar-container">
-        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-            <a-assets>
-                <!-- Load your 3D flower model -->
-                <a-asset-item id="flowerModel" src="lego.glb"></a-asset-item>
-            </a-assets>
+  <!-- AR Container -->
+  <div id="ar-container">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+      <a-assets>
+        <!-- Load your 3D model -->
+        <a-asset-item id="flowerModel" src="lego.glb"></a-asset-item>
+      </a-assets>
 
-            <a-light type="directional" position="4 4 4"></a-light>
-            <a-light type="ambient" color="#ffffff"></a-light>
+      <!-- Lighting -->
+      <a-light type="directional" position="5 10 7" intensity="0.8"></a-light>
+      <a-light type="ambient" color="#ffffff" intensity="0.5"></a-light>
 
-            <!-- 3D Model -->
-            <a-entity id="flower-container" position="0 1 -6" scale="0.4 0.4 0.4" gesture-detector>
-                <a-entity gltf-model="#flowerModel" scale="1 1 1"></a-entity>
-            </a-entity>
+      <!-- 3D Model -->
+      <a-entity id="flower-container" position="0 0 -1.5" scale="4 4 4" gesture-detector>
+        <a-entity gltf-model="#flowerModel" scale="1 1 1"></a-entity>
+      </a-entity>
 
-            <!-- Camera -->
-            <a-camera gps-camera look-controls="pointerLockEnabled: false; touchEnabled: true; keyboardEnabled: true;">
-            </a-camera>
-        </a-scene>
-    </div>
+      <!-- AR camera -->
+      <a-camera gps-camera rotation-reader look-controls="pointerLockEnabled: false;"></a-camera>
+    </a-scene>
+  </div>
 
-    <script>
-        const flowerContainer = document.getElementById('flower-container');
+  <script>
+    const flowerContainer = document.getElementById('flower-container');
 
-        // Handle gesture events for rotation
-        flowerContainer.addEventListener('gesturemove', (event) => {
-            const { detail } = event;
+    // Gesture-based rotation
+    flowerContainer.addEventListener('gesturemove', (event) => {
+      const { detail } = event;
+      if (detail.type === 'rotate') {
+        flowerContainer.object3D.rotation.y -= detail.rotationChange / 200;
+      } else if (detail.type === 'pinch' || detail.type === 'scale') {
+        flowerContainer.object3D.scale.multiplyScalar(1 + detail.scaleChange / 10);
+      }
+    });
 
-            // Rotate the model based on gesture movement
-            if (detail.type === 'rotate') {
-                flowerContainer.object3D.rotation.y -= detail.rotationChange / 100; // Horizontal rotation
-            } else if (detail.type === 'pinch' || detail.type === 'scale') {
-                flowerContainer.object3D.rotation.x += detail.rotationChange / 100; // Vertical rotation
-            }
-        });
+    // Keyboard rotation fallback
+    document.addEventListener('keydown', (event) => {
+      const step = THREE.Math.degToRad(5);
+      const obj = flowerContainer.object3D;
 
-        // Add fallback keyboard controls for rotation
-        document.addEventListener('keydown', (event) => {
-            const rotationStep = 5; // Degrees to rotate per key press
-
-            switch (event.key) {
-                case 'ArrowLeft': // Rotate left
-                    flowerContainer.object3D.rotation.y -= THREE.Math.degToRad(rotationStep);
-                    break;
-                case 'ArrowRight': // Rotate right
-                    flowerContainer.object3D.rotation.y += THREE.Math.degToRad(rotationStep);
-                    break;
-                case 'ArrowUp': // Rotate up
-                    flowerContainer.object3D.rotation.x -= THREE.Math.degToRad(rotationStep);
-                    break;
-                case 'ArrowDown': // Rotate down
-                    flowerContainer.object3D.rotation.x += THREE.Math.degToRad(rotationStep);
-                    break;
-            }
-        });
-    </script>
+      switch (event.key) {
+        case 'ArrowLeft': obj.rotation.y -= step; break;
+        case 'ArrowRight': obj.rotation.y += step; break;
+        case 'ArrowUp': obj.rotation.x -= step; break;
+        case 'ArrowDown': obj.rotation.x += step; break;
+      }
+    });
+  </script>
 </body>
 </html>
