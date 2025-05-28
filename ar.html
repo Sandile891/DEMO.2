@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LEGO Robot Programming Terminal</title>
+    <title>LEGO Robot Programming Simulator</title>
     
     <!-- Model Viewer Library -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -70,6 +70,49 @@
             width: 100%;
             height: 100%;
             --progress-bar-color: transparent;
+        }
+        
+        .viewer-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        .control-btn {
+            background: rgba(0, 40, 80, 0.7);
+            color: white;
+            border: 1px solid #00b4ff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .control-btn:hover {
+            background: rgba(0, 100, 200, 0.7);
+            box-shadow: 0 0 10px rgba(0, 180, 255, 0.7);
+        }
+        
+        .run-btn {
+            background: linear-gradient(90deg, #00c853, #009624);
+        }
+        
+        .run-btn:hover {
+            background: linear-gradient(90deg, #00e676, #00c853);
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.7);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(90deg, #ff3d00, #dd2c00);
+        }
+        
+        .reset-btn:hover {
+            background: linear-gradient(90deg, #ff5722, #ff3d00);
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.7);
         }
         
         .loading-container {
@@ -146,10 +189,26 @@
         .terminal-body {
             flex: 1;
             padding: 20px;
-            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+        }
+        
+        #code-editor {
+            flex: 1;
+            background: rgba(0, 20, 40, 0.7);
+            border: none;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            padding: 15px;
+            border-radius: 8px;
+            resize: none;
+            outline: none;
+            margin-bottom: 15px;
+        }
+        
+        #code-editor:focus {
+            box-shadow: 0 0 10px rgba(0, 180, 255, 0.5);
         }
         
         .output-line {
@@ -161,6 +220,7 @@
             white-space: pre-wrap;
             word-break: break-word;
             animation: fadeIn 0.3s ease-out;
+            margin-bottom: 10px;
         }
         
         @keyframes fadeIn {
@@ -179,37 +239,6 @@
         .error {
             color: #ff5555;
             border-left-color: #ff5555;
-        }
-        
-        .input-area {
-            display: flex;
-            padding: 15px;
-            background: rgba(0, 20, 40, 0.9);
-            border-top: 2px solid #00b4ff;
-        }
-        
-        .prompt {
-            padding: 12px 15px;
-            background: #003366;
-            border-radius: 8px 0 0 8px;
-            font-family: 'Courier New', monospace;
-        }
-        
-        #command-input {
-            flex: 1;
-            padding: 12px;
-            background: rgba(0, 40, 80, 0.7);
-            border: none;
-            color: white;
-            font-family: 'Courier New', monospace;
-            font-size: 16px;
-            outline: none;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        #command-input:focus {
-            background: rgba(0, 60, 120, 0.7);
-            box-shadow: 0 0 10px rgba(0, 180, 255, 0.5);
         }
         
         .controls {
@@ -352,13 +381,14 @@
 </head>
 <body>
     <div class="header">
-        <h1>LEGO Robot Programming Terminal</h1>
-        <p class="subtitle">Program your virtual LEGO robot using Python commands. Enter instructions like move_forward(10), turn_left(90), or stop() to control the robot's movements.</p>
+        <h1>LEGO Robot Programming Simulator</h1>
+        <p class="subtitle">Program your virtual LEGO robot using Python commands. Write your program and press Run to see it execute!</p>
     </div>
     
     <div class="container">
         <div class="viewer-container">
             <model-viewer 
+                id="robot-model"
                 src="lego.glb"
                 alt="LEGO Robot"
                 ar
@@ -376,27 +406,38 @@
                     </div>
                 </div>
             </model-viewer>
+            
+            <div class="viewer-controls">
+                <button class="control-btn reset-btn" id="reset-btn">Reset Position</button>
+                <button class="control-btn run-btn" id="run-btn">Run Program</button>
+            </div>
         </div>
         
         <div class="terminal-container">
             <div class="terminal-header">
-                <div>Robot Terminal</div>
+                <div>Python Program Editor</div>
                 <div class="status-indicator">
                     <div class="status-light"></div>
                     <span>ACTIVE</span>
                 </div>
             </div>
             
-            <div class="terminal-body" id="terminal-output">
-                <div class="output-line">>>> Welcome to LEGO Robot Control Terminal</div>
-                <div class="output-line">>>> Type your commands below to control the robot</div>
-                <div class="output-line">>>> Available commands: move_forward(distance), move_backward(distance), turn_left(angle), turn_right(angle), stop()</div>
-                <div class="output-line response">System initialized. Robot is ready for commands.</div>
-            </div>
-            
-            <div class="input-area">
-                <div class="prompt">>>></div>
-                <input type="text" id="command-input" placeholder="Enter robot command (e.g. move_forward(10))...">
+            <div class="terminal-body">
+                <textarea id="code-editor" placeholder="Write your robot program here..."># Welcome to LEGO Robot Simulator!
+# Write Python commands to control the robot
+
+# Example program:
+move_forward(10)
+turn_left(90)
+move_forward(15)
+turn_right(45)
+move_backward(5)
+stop()</textarea>
+                
+                <div id="terminal-output">
+                    <div class="output-line">>>> Program ready. Press "Run Program" to execute.</div>
+                    <div class="output-line">>>> Available commands: move_forward(distance), move_backward(distance), turn_left(angle), turn_right(angle), stop()</div>
+                </div>
             </div>
         </div>
     </div>
@@ -434,11 +475,11 @@
         
         <div class="control-section">
             <h2 class="section-title">Robot Status</h2>
-            <div class="output-line">Position: X: 0.0 cm, Y: 0.0 cm</div>
-            <div class="output-line">Rotation: 0°</div>
-            <div class="output-line">Speed: 5/10</div>
+            <div class="output-line">Position: X: <span id="pos-x">0.0</span> cm, Y: <span id="pos-y">0.0</span> cm</div>
+            <div class="output-line">Rotation: <span id="rotation">0</span>°</div>
+            <div class="output-line">Speed: <span id="speed">5</span>/10</div>
             <div class="output-line">Battery: 98%</div>
-            <div class="output-line">Motors: IDLE</div>
+            <div class="output-line">Motors: <span id="motor-status">IDLE</span></div>
             <div class="output-line">Sensors: All systems normal</div>
         </div>
     </div>
@@ -448,71 +489,96 @@
         <div class="examples-grid">
             <div class="example-card">
                 <div class="example-title">Square Pattern</div>
-                <div class="example-code">move_forward(20)
+                <div class="example-code"># Draw a square
+move_forward(20)
 turn_right(90)
 move_forward(20)
 turn_right(90)
 move_forward(20)
 turn_right(90)
 move_forward(20)</div>
-                <button class="run-button">Run This Program</button>
+                <button class="run-button" data-code="move_forward(20)
+turn_right(90)
+move_forward(20)
+turn_right(90)
+move_forward(20)
+turn_right(90)
+move_forward(20)">Load This Program</button>
             </div>
             <div class="example-card">
                 <div class="example-title">Zigzag Movement</div>
-                <div class="example-code">move_forward(15)
+                <div class="example-code"># Zigzag pattern
+move_forward(15)
 turn_left(45)
 move_forward(10)
 turn_right(45)
 move_forward(15)
 turn_right(45)
 move_forward(10)</div>
-                <button class="run-button">Run This Program</button>
+                <button class="run-button" data-code="move_forward(15)
+turn_left(45)
+move_forward(10)
+turn_right(45)
+move_forward(15)
+turn_right(45)
+move_forward(10)">Load This Program</button>
             </div>
             <div class="example-card">
                 <div class="example-title">Speed Control</div>
-                <div class="example-code">set_speed(3)
+                <div class="example-code"># Speed demonstration
+set_speed(3)
 move_forward(10)
 set_speed(7)
 move_forward(20)
 set_speed(10)
 move_forward(30)
 stop()</div>
-                <button class="run-button">Run This Program</button>
+                <button class="run-button" data-code="set_speed(3)
+move_forward(10)
+set_speed(7)
+move_forward(20)
+set_speed(10)
+move_forward(30)
+stop()">Load This Program</button>
             </div>
         </div>
     </div>
     
     <div class="footer">
-        <p>DeepSeek-R1 Robotics Interface | Today's Date: 2025-05-28 | System Version 2.4.1</p>
+        <p>DeepSeek-R1 Robotics Simulator | Today's Date: 2025-05-28 | System Version 3.1.0</p>
         <p>Note: This is a simulation interface. Robot movements are virtual.</p>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const commandInput = document.getElementById('command-input');
+            const codeEditor = document.getElementById('code-editor');
             const terminalOutput = document.getElementById('terminal-output');
+            const runBtn = document.getElementById('run-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const robotModel = document.getElementById('robot-model');
+            
+            // Robot state
+            const robotState = {
+                x: 0,
+                y: 0,
+                rotation: 0,
+                speed: 5,
+                isMoving: false
+            };
+            
+            // Update status display
+            function updateStatus() {
+                document.getElementById('pos-x').textContent = robotState.x.toFixed(1);
+                document.getElementById('pos-y').textContent = robotState.y.toFixed(1);
+                document.getElementById('rotation').textContent = robotState.rotation;
+                document.getElementById('speed').textContent = robotState.speed;
+                document.getElementById('motor-status').textContent = robotState.isMoving ? 'MOVING' : 'IDLE';
+            }
             
             // Hide loading indicator when model is loaded
-            const modelViewer = document.querySelector('model-viewer');
-            modelViewer.addEventListener('load', () => {
+            robotModel.addEventListener('load', () => {
                 document.querySelector('.loading-container').style.display = 'none';
-            });
-            
-            // Handle command input
-            commandInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    const command = commandInput.value.trim();
-                    if (command) {
-                        // Add command to terminal
-                        addToTerminal(`>>> ${command}`, 'command');
-                        
-                        // Process command
-                        processCommand(command);
-                        
-                        // Clear input
-                        commandInput.value = '';
-                    }
-                }
+                updateStatus();
             });
             
             // Add to terminal function
@@ -533,100 +599,243 @@ stop()</div>
                 terminalOutput.scrollTop = terminalOutput.scrollHeight;
             }
             
+            // Reset robot position
+            resetBtn.addEventListener('click', () => {
+                robotState.x = 0;
+                robotState.y = 0;
+                robotState.rotation = 0;
+                robotState.isMoving = false;
+                robotModel.style.transform = '';
+                addToTerminal(">>> Robot position reset to origin");
+                updateStatus();
+            });
+            
             // Process robot commands
-            function processCommand(command) {
-                // Convert to lowercase for case-insensitive matching
-                const cmd = command.toLowerCase();
-                
-                // Extract command and parameters
-                let match;
-                
-                // Check for movement commands
-                if (match = cmd.match(/move_forward\((\d+)\)/)) {
-                    const distance = parseInt(match[1]);
-                    if (distance > 0 && distance <= 100) {
-                        addToTerminal(`Moving forward ${distance} cm...`);
-                        simulateMovement('forward', distance);
-                    } else {
-                        addToTerminal(`Error: Distance must be between 1 and 100 cm`, 'error');
-                    }
-                } 
-                else if (match = cmd.match(/move_backward\((\d+)\)/)) {
-                    const distance = parseInt(match[1]);
-                    if (distance > 0 && distance <= 100) {
-                        addToTerminal(`Moving backward ${distance} cm...`);
-                        simulateMovement('backward', distance);
-                    } else {
-                        addToTerminal(`Error: Distance must be between 1 and 100 cm`, 'error');
-                    }
-                } 
-                // Check for turning commands
-                else if (match = cmd.match(/turn_left\((\d+)\)/)) {
-                    const angle = parseInt(match[1]);
-                    if (angle > 0 && angle <= 360) {
-                        addToTerminal(`Turning left ${angle} degrees...`);
-                        simulateTurn('left', angle);
-                    } else {
-                        addToTerminal(`Error: Angle must be between 1 and 360 degrees`, 'error');
-                    }
-                } 
-                else if (match = cmd.match(/turn_right\((\d+)\)/)) {
-                    const angle = parseInt(match[1]);
-                    if (angle > 0 && angle <= 360) {
-                        addToTerminal(`Turning right ${angle} degrees...`);
-                        simulateTurn('right', angle);
-                    } else {
-                        addToTerminal(`Error: Angle must be between 1 and 360 degrees`, 'error');
-                    }
-                } 
-                // Check for stop command
-                else if (cmd === 'stop()') {
-                    addToTerminal(`All motors stopped. Robot is idle.`);
-                } 
-                // Check for speed command
-                else if (match = cmd.match(/set_speed\((\d+)\)/)) {
-                    const speed = parseInt(match[1]);
-                    if (speed >= 1 && speed <= 10) {
-                        addToTerminal(`Movement speed set to ${speed}/10`);
-                    } else {
-                        addToTerminal(`Error: Speed must be between 1 and 10`, 'error');
-                    }
-                } 
-                // Handle unknown commands
-                else {
-                    addToTerminal(`Error: Unrecognized command '${command}'. Type a valid command.`, 'error');
-                }
+            function processCommand(command, delay) {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        // Convert to lowercase for case-insensitive matching
+                        const cmd = command.toLowerCase();
+                        
+                        // Extract command and parameters
+                        let match;
+                        
+                        // Check for movement commands
+                        if (match = cmd.match(/move_forward\((\d+)\)/)) {
+                            const distance = parseInt(match[1]);
+                            if (distance > 0 && distance <= 100) {
+                                addToTerminal(`>>> Moving forward ${distance} cm...`, 'command');
+                                robotState.isMoving = true;
+                                updateStatus();
+                                
+                                // Simulate movement animation
+                                const duration = distance * 100 / robotState.speed;
+                                simulateMovement('forward', distance, duration)
+                                    .then(() => {
+                                        addToTerminal(`✓ Completed: moved forward ${distance} cm`);
+                                        robotState.isMoving = false;
+                                        updateStatus();
+                                        resolve();
+                                    });
+                            } else {
+                                addToTerminal(`Error: Distance must be between 1 and 100 cm`, 'error');
+                                resolve();
+                            }
+                        } 
+                        else if (match = cmd.match(/move_backward\((\d+)\)/)) {
+                            const distance = parseInt(match[1]);
+                            if (distance > 0 && distance <= 100) {
+                                addToTerminal(`>>> Moving backward ${distance} cm...`, 'command');
+                                robotState.isMoving = true;
+                                updateStatus();
+                                
+                                // Simulate movement animation
+                                const duration = distance * 100 / robotState.speed;
+                                simulateMovement('backward', distance, duration)
+                                    .then(() => {
+                                        addToTerminal(`✓ Completed: moved backward ${distance} cm`);
+                                        robotState.isMoving = false;
+                                        updateStatus();
+                                        resolve();
+                                    });
+                            } else {
+                                addToTerminal(`Error: Distance must be between 1 and 100 cm`, 'error');
+                                resolve();
+                            }
+                        } 
+                        // Check for turning commands
+                        else if (match = cmd.match(/turn_left\((\d+)\)/)) {
+                            const angle = parseInt(match[1]);
+                            if (angle > 0 && angle <= 360) {
+                                addToTerminal(`>>> Turning left ${angle} degrees...`, 'command');
+                                robotState.isMoving = true;
+                                updateStatus();
+                                
+                                // Simulate turning animation
+                                const duration = angle * 20 / robotState.speed;
+                                simulateTurn('left', angle, duration)
+                                    .then(() => {
+                                        robotState.rotation = (robotState.rotation - angle + 360) % 360;
+                                        addToTerminal(`✓ Completed: turned left ${angle}°`);
+                                        robotState.isMoving = false;
+                                        updateStatus();
+                                        resolve();
+                                    });
+                            } else {
+                                addToTerminal(`Error: Angle must be between 1 and 360 degrees`, 'error');
+                                resolve();
+                            }
+                        } 
+                        else if (match = cmd.match(/turn_right\((\d+)\)/)) {
+                            const angle = parseInt(match[1]);
+                            if (angle > 0 && angle <= 360) {
+                                addToTerminal(`>>> Turning right ${angle} degrees...`, 'command');
+                                robotState.isMoving = true;
+                                updateStatus();
+                                
+                                // Simulate turning animation
+                                const duration = angle * 20 / robotState.speed;
+                                simulateTurn('right', angle, duration)
+                                    .then(() => {
+                                        robotState.rotation = (robotState.rotation + angle) % 360;
+                                        addToTerminal(`✓ Completed: turned right ${angle}°`);
+                                        robotState.isMoving = false;
+                                        updateStatus();
+                                        resolve();
+                                    });
+                            } else {
+                                addToTerminal(`Error: Angle must be between 1 and 360 degrees`, 'error');
+                                resolve();
+                            }
+                        } 
+                        // Check for stop command
+                        else if (cmd === 'stop()') {
+                            addToTerminal(`>>> Stopping all motors`, 'command');
+                            robotState.isMoving = false;
+                            addToTerminal("✓ All motors stopped");
+                            updateStatus();
+                            resolve();
+                        } 
+                        // Check for speed command
+                        else if (match = cmd.match(/set_speed\((\d+)\)/)) {
+                            const speed = parseInt(match[1]);
+                            if (speed >= 1 && speed <= 10) {
+                                robotState.speed = speed;
+                                addToTerminal(`>>> Movement speed set to ${speed}/10`, 'command');
+                                addToTerminal("✓ Speed updated");
+                                updateStatus();
+                                resolve();
+                            } else {
+                                addToTerminal(`Error: Speed must be between 1 and 10`, 'error');
+                                resolve();
+                            }
+                        } 
+                        // Handle comments and empty lines
+                        else if (cmd.startsWith('#') || cmd.trim() === '') {
+                            resolve();
+                        }
+                        // Handle unknown commands
+                        else {
+                            addToTerminal(`Error: Unrecognized command '${command}'. Type a valid command.`, 'error');
+                            resolve();
+                        }
+                    }, delay);
+                });
             }
             
-            // Simulate robot movement (visual effects only)
-            function simulateMovement(direction, distance) {
-                // In a real implementation, this would control the 3D model
-                // For this demo, we'll just log to console
-                console.log(`Simulating ${direction} movement: ${distance} cm`);
+            // Simulate robot movement with animation
+            function simulateMovement(direction, distance, duration) {
+                return new Promise(resolve => {
+                    const startTime = Date.now();
+                    const startX = robotState.x;
+                    const startY = robotState.y;
+                    
+                    // Calculate movement direction based on current rotation
+                    const rad = robotState.rotation * Math.PI / 180;
+                    const dirX = Math.sin(rad);
+                    const dirY = -Math.cos(rad); // Negative because Y axis points down in CSS
+                    
+                    const targetX = startX + (direction === 'forward' ? dirX : -dirX) * distance;
+                    const targetY = startY + (direction === 'forward' ? dirY : -dirY) * distance;
+                    
+                    const animate = () => {
+                        const elapsed = Date.now() - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        
+                        robotState.x = startX + (targetX - startX) * progress;
+                        robotState.y = startY + (targetY - startY) * progress;
+                        
+                        // Update model position
+                        robotModel.style.transform = `translate(${robotState.x * 10}px, ${robotState.y * 10}px) rotate(${robotState.rotation}deg)`;
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        } else {
+                            robotState.x = targetX;
+                            robotState.y = targetY;
+                            resolve();
+                        }
+                    };
+                    
+                    animate();
+                });
             }
             
             // Simulate robot turning
-            function simulateTurn(direction, angle) {
-                // In a real implementation, this would rotate the 3D model
-                console.log(`Simulating ${direction} turn: ${angle} degrees`);
+            function simulateTurn(direction, angle, duration) {
+                return new Promise(resolve => {
+                    const startTime = Date.now();
+                    const startRotation = robotState.rotation;
+                    const targetRotation = direction === 'left' ? 
+                        startRotation - angle : startRotation + angle;
+                    
+                    const animate = () => {
+                        const elapsed = Date.now() - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        
+                        const currentRotation = direction === 'left' ? 
+                            startRotation - angle * progress : 
+                            startRotation + angle * progress;
+                            
+                        robotModel.style.transform = `translate(${robotState.x * 10}px, ${robotState.y * 10}px) rotate(${currentRotation}deg)`;
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        } else {
+                            resolve();
+                        }
+                    };
+                    
+                    animate();
+                });
             }
             
-            // Add event listeners to run buttons
+            // Run program
+            runBtn.addEventListener('click', async () => {
+                const program = codeEditor.value;
+                const commands = program.split('\n').filter(cmd => cmd.trim() !== '');
+                
+                // Clear terminal and add header
+                terminalOutput.innerHTML = '';
+                addToTerminal(">>> Starting program execution...");
+                
+                // Execute each command with a delay
+                for (let i = 0; i < commands.length; i++) {
+                    await processCommand(commands[i], i * 100);
+                }
+                
+                addToTerminal(">>> Program execution completed");
+            });
+            
+            // Load example programs
             document.querySelectorAll('.run-button').forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const exampleCode = e.target.previousElementSibling.textContent;
-                    const commands = exampleCode.split('\n').filter(cmd => cmd.trim() !== '');
+                    const exampleCode = e.target.getAttribute('data-code');
+                    codeEditor.value = exampleCode;
+                    addToTerminal(">>> Example program loaded into editor");
                     
-                    // Add program header
-                    addToTerminal(">>> Running program...");
-                    
-                    // Execute each command with a delay
-                    commands.forEach((cmd, index) => {
-                        setTimeout(() => {
-                            addToTerminal(`>>> ${cmd}`, 'command');
-                            processCommand(cmd);
-                        }, 1000 * index);
-                    });
+                    // Scroll to top
+                    codeEditor.scrollTop = 0;
                 });
             });
         });
