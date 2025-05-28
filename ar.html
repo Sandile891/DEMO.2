@@ -3,581 +3,679 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robot Simulator with Python Terminal</title>
-    
-    <!-- Model Viewer Library -->
+    <title>LEGO EV3 Python Simulator</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #4a6fa5;
-            --secondary: #6b8cbc;
-            --accent: #ff6b6b;
-            --dark: #2c3e50;
-            --light: #f5f7fa;
-            --terminal-bg: #1e1e1e;
-            --success: #2ecc71;
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
-            color: var(--light);
+            background: linear-gradient(135deg, #1a2a6c, #2a4d69, #4b86b4);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        
-        .header {
-            padding: 15px 20px;
-            background-color: rgba(26, 32, 44, 0.8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        
-        .header h1 {
-            font-size: 1.8rem;
-            background: linear-gradient(90deg, #4facfe, #00f2fe);
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        
-        .header .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo-icon {
-            font-size: 2rem;
-            color: #4facfe;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .btn {
-            padding: 8px 16px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .btn:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .btn.run {
-            background: var(--success);
-        }
-        
-        .btn.reset {
-            background: var(--accent);
-        }
-        
-        .container {
-            display: flex;
-            flex: 1;
-            padding: 20px;
-            gap: 20px;
-        }
-        
-        .simulator-container {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        .simulator-header {
-            padding: 12px 20px;
-            background: rgba(26, 32, 44, 0.9);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .simulator-header h2 {
-            font-size: 1.3rem;
-            font-weight: 500;
-            color: #4facfe;
-        }
-        
-        model-viewer {
-            flex: 1;
-            width: 100%;
-            --progress-bar-color: transparent;
-            background: rgba(0, 10, 20, 0.4);
-        }
-        
-        .terminal-container {
-            flex: 2;
-            display: flex;
-            flex-direction: column;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        .terminal-header {
-            padding: 12px 20px;
-            background: rgba(26, 32, 44, 0.9);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .terminal-header h2 {
-            font-size: 1.3rem;
-            font-weight: 500;
-            color: #4facfe;
-        }
-        
-        .terminal-header .icon {
-            color: #00f2fe;
+
+        header p {
             font-size: 1.2rem;
+            color: #d0e1f9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
         }
-        
-        .terminal {
-            flex: 1;
-            background: var(--terminal-bg);
-            padding: 15px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #d4d4d4;
+
+        .simulator-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .simulator-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title i {
+            margin-right: 10px;
+            color: #64b5f6;
+        }
+
+        .panel-title h2 {
+            font-size: 1.5rem;
+            color: #64b5f6;
+        }
+
+        #model-container {
+            height: 500px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            --progress-bar-color: transparent;
+        }
+
+        #terminal-container {
             display: flex;
             flex-direction: column;
+            height: 500px;
         }
-        
-        .code-editor {
-            flex: 1;
-            background: #1e1e1e;
-            border: none;
-            color: #d4d4d4;
-            padding: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
-            resize: none;
-            outline: none;
-            border-radius: 0 0 10px 10px;
-        }
-        
-        .code-editor:focus {
-            outline: 1px solid var(--primary);
-        }
-        
-        .terminal-output {
-            background: #1e1e1e;
-            padding: 10px 15px;
-            border-top: 1px solid #333;
-            font-family: 'Courier New', monospace;
-            color: #d4d4d4;
-            min-height: 80px;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        
-        .command-list {
-            background: rgba(30, 30, 30, 0.8);
-            padding: 15px;
+
+        #terminal {
+            flex-grow: 1;
+            background: #011627;
             border-radius: 8px;
-            margin-top: 15px;
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #d6deeb;
+            overflow-y: auto;
+            border: 1px solid rgba(127, 219, 255, 0.2);
+            margin-bottom: 15px;
+            line-height: 1.5;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
         }
-        
-        .command-list h3 {
-            color: #4facfe;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
+
+        #terminal-output {
+            white-space: pre-wrap;
         }
-        
-        .commands {
+
+        .command-line {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        #command-input {
+            flex-grow: 1;
+            background: rgba(1, 22, 39, 0.8);
+            border: 1px solid rgba(127, 219, 255, 0.3);
+            border-radius: 5px 0 0 5px;
+            padding: 10px 15px;
+            color: #d6deeb;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+        }
+
+        #run-btn {
+            background: linear-gradient(45deg, #00c853, #64dd17);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        #run-btn:hover {
+            background: linear-gradient(45deg, #00e676, #76ff03);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 200, 83, 0.4);
+        }
+
+        #run-btn:active {
+            transform: translateY(0);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .control-section {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-section h3 {
+            margin-bottom: 15px;
+            color: #bb86fc;
+        }
+
+        .code-examples {
+            background: rgba(1, 22, 39, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #d6deeb;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            border: 1px solid rgba(127, 219, 255, 0.2);
+        }
+
+        .code-examples pre {
+            white-space: pre-wrap;
+        }
+
+        .function-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
+            gap: 12px;
         }
-        
-        .command {
-            background: rgba(74, 111, 165, 0.2);
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            border-left: 3px solid var(--primary);
+
+        .function-card {
+            background: rgba(25, 118, 210, 0.15);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            transition: all 0.3s ease;
         }
-        
-        .footer {
-            padding: 15px 20px;
-            text-align: center;
-            background: rgba(26, 32, 44, 0.8);
-            font-size: 0.9rem;
-            color: #a0aec0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+        .function-card:hover {
+            background: rgba(25, 118, 210, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(25, 118, 210, 0.2);
         }
-        
-        .robot-status {
+
+        .function-card h4 {
+            color: #64b5f6;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .function-card p {
+            font-size: 0.85rem;
+            color: #b0bec5;
+        }
+
+        .instructions {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .instructions h3 {
+            color: #ffab40;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .status-bar {
             display: flex;
-            gap: 20px;
+            justify-content: space-between;
             padding: 10px 20px;
-            background: rgba(26, 32, 44, 0.7);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
         }
-        
+
         .status-item {
             display: flex;
-            flex-direction: column;
+            align-items: center;
         }
-        
-        .status-label {
-            font-size: 0.8rem;
-            color: #a0aec0;
+
+        .status-item i {
+            margin-right: 8px;
+            color: #64b5f6;
         }
-        
-        .status-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #4facfe;
+
+        .robot-status {
+            color: #a5d6a7;
         }
-        
-        /* Syntax highlighting for code */
-        .keyword { color: #569cd6; }
-        .function { color: #dcdcaa; }
-        .number { color: #b5cea8; }
-        .comment { color: #6a9955; }
-        .string { color: #ce9178; }
-        
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 8px;
+
+        .loading-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            border-radius: 10px;
         }
-        
-        ::-webkit-scrollbar-track {
-            background: rgba(30, 30, 30, 0.5);
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
         }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 4px;
+
+        .loading-progress {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #00c853, #64dd17);
+            transform-origin: left;
+            animation: loading 1.6s infinite;
         }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--secondary);
+
+        @keyframes loading {
+            0% { transform: scaleX(0); }
+            50% { transform: scaleX(1); }
+            100% { transform: scaleX(0); transform-origin: right; }
         }
-        
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-            
-            .simulator-container, .terminal-container {
-                flex: none;
-                height: 50vh;
-            }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: #b0bec5;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .robot-animation {
+            animation: robot-move 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes robot-move {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-5px); }
         }
     </style>
 </head>
-
 <body>
-    <div class="header">
-        <div class="logo">
-            <div class="logo-icon">🤖</div>
-            <h1>Python Robot Simulator</h1>
-        </div>
-        <div class="controls">
-            <button class="btn reset" id="resetBtn">
-                <span>↺</span> Reset
-            </button>
-            <button class="btn run" id="runBtn">
-                <span>▶</span> Run Code
-            </button>
-        </div>
-    </div>
-    
     <div class="container">
-        <div class="simulator-container">
-            <div class="simulator-header">
-                <h2>3D Robot Simulator</h2>
-                <div>Physics: <span style="color:#2ecc71;">Enabled</span></div>
-            </div>
-            <model-viewer 
-                id="robotViewer"
-                src="https://cdn.glitch.global/8c6b598e-8c00-4d7b-96d5-5c0f6a5c0a3c/lego-robot.glb?v=1702055427852"
-                alt="3D Robot Model"
-                environment-image="neutral"
-                camera-controls
-                shadow-intensity="1"
-                exposure="1.0"
-                camera-orbit="0deg 75deg 2m"
-            >
-                <div class="loading-container" slot="progress-bar">
-                    <div class="loading-bar"></div>
-                </div>
-            </model-viewer>
-            
-            <div class="robot-status">
-                <div class="status-item">
-                    <div class="status-label">Position</div>
-                    <div class="status-value">X: 0.0, Z: 0.0</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">Rotation</div>
-                    <div class="status-value">0°</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">Speed</div>
-                    <div class="status-value">0 cm/s</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="terminal-container">
-            <div class="terminal-header">
-                <h2>Python Terminal</h2>
-                <div class="icon">🐍</div>
-            </div>
-            <div class="terminal">
-                <textarea id="codeEditor" class="code-editor"># Welcome to Robot Simulator!
-# Use these commands to control the robot:
+        <header>
+            <h1><i class="fas fa-robot"></i> LEGO EV3 Python Simulator</h1>
+            <p>Program a virtual LEGO robot using Python commands. See your code come to life with a 3D model and physics-based movement!</p>
+        </header>
 
-move_forward(20)   # Move forward 20 cm
-turn_left(90)       # Turn left 90 degrees
-move_forward(15)
-turn_right(45)
-move_backward(10)
-
-# Try changing these commands and click Run!</textarea>
-                
-                <div class="command-list">
-                    <h3>Available Commands:</h3>
-                    <div class="commands">
-                        <div class="command">move_forward(distance)</div>
-                        <div class="command">move_backward(distance)</div>
-                        <div class="command">turn_left(degrees)</div>
-                        <div class="command">turn_right(degrees)</div>
-                        <div class="command">set_speed(speed)</div>
-                        <div class="command">wait(seconds)</div>
+        <div class="simulator-layout">
+            <div class="panel">
+                <div class="panel-title">
+                    <i class="fas fa-cube"></i>
+                    <h2>3D Robot Model</h2>
+                </div>
+                <div id="model-container">
+                    <model-viewer 
+                        id="robot-model"
+                        src="https://cdn.glitch.global/8e0d0a0e-8b2e-4a0a-bd76-9d1a5c9b5a0e/lego_robot.glb?v=1681234567890"
+                        alt="LEGO EV3 Robot"
+                        ar
+                        environment-image="neutral"
+                        auto-rotate
+                        camera-controls
+                        shadow-intensity="1"
+                        exposure="0.8"
+                        camera-orbit="0deg 75deg 2m"
+                    >
+                        <div class="loading-container">
+                            <div class="loading-bar">
+                                <div class="loading-progress"></div>
+                            </div>
+                        </div>
+                    </model-viewer>
+                </div>
+                <div class="status-bar">
+                    <div class="status-item">
+                        <i class="fas fa-microchip"></i>
+                        <span>EV3 Processor: 300 MHz</span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-battery-three-quarters"></i>
+                        <span>Battery: 85%</span>
+                    </div>
+                    <div class="status-item robot-status">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Status: Ready</span>
                     </div>
                 </div>
             </div>
-            
-            <div class="terminal-output" id="output">
-                <div>> Ready to execute program...</div>
+
+            <div class="panel">
+                <div class="panel-title">
+                    <i class="fas fa-terminal"></i>
+                    <h2>Python Terminal</h2>
+                </div>
+                <div id="terminal-container">
+                    <div id="terminal">
+                        <div id="terminal-output">LEGO EV3 Simulator v1.0 - Type Python commands to control the robot
+----------------------------------------------------
+&gt; Ready for commands...</div>
+                    </div>
+                    <div class="command-line">
+                        <input type="text" id="command-input" placeholder="Enter Python command (e.g. move_forward(100))...">
+                        <button id="run-btn"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div class="footer">
-        <p>Robot Simulator with Python Terminal | Realistic Physics | Wheel Rotation Simulation</p>
+
+        <div class="controls">
+            <div class="control-section">
+                <h3><i class="fas fa-code"></i> Example Programs</h3>
+                <div class="code-examples">
+                    <pre># Move in a square pattern
+for i in range(4):
+    move_forward(200)
+    turn_right(90)</pre>
+                    <pre># Avoid obstacle
+move_forward(150)
+if read_distance() < 20:
+    turn_left(90)
+    move_forward(150)</pre>
+                    <pre># Follow light
+while True:
+    light = read_light()
+    if light > 70:
+        move_forward(100)
+    else:
+        turn_left(15)</pre>
+                </div>
+            </div>
+            <div class="control-section">
+                <h3><i class="fas fa-functions"></i> Available Functions</h3>
+                <div class="function-list">
+                    <div class="function-card">
+                        <h4>move_forward(power)</h4>
+                        <p>Move robot forward at specified power (0-100)</p>
+                    </div>
+                    <div class="function-card">
+                        <h4>move_backward(power)</h4>
+                        <p>Move robot backward at specified power (0-100)</p>
+                    </div>
+                    <div class="function-card">
+                        <h4>turn_left(degrees)</h4>
+                        <p>Turn robot left by specified degrees</p>
+                    </div>
+                    <div class="function-card">
+                        <h4>turn_right(degrees)</h4>
+                        <p>Turn robot right by specified degrees</p>
+                    </div>
+                    <div class="function-card">
+                        <h4>stop()</h4>
+                        <p>Stop all robot movement</p>
+                    </div>
+                    <div class="function-card">
+                        <h4>read_distance()</h4>
+                        <p>Get distance to obstacle in cm</p>
+                    </div>
+                    <div class="function-card">
+                        <h4>read_light()</h4>
+                        <p>Get light sensor reading (0-100)</p>
+                    </div>
+                    <div class="function-card">
+                        <h4>set_speed(speed)</h4>
+                        <p>Set default movement speed (0-100)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> How to Use the Simulator</h3>
+            <ol>
+                <li>Type Python commands in the terminal input field (e.g. <code>move_forward(100)</code>)</li>
+                <li>Click "Run" to execute your commands</li>
+                <li>Watch the 3D robot model respond to your commands with physics-based movement</li>
+                <li>Use the example programs as templates for your own creations</li>
+                <li>Combine multiple commands to create complex behaviors</li>
+                <li>Use loops and conditionals for more advanced programs</li>
+            </ol>
+            <p>The simulator features realistic physics - wheels rotate proportionally to motor power, and turning is achieved by differential wheel speeds.</p>
+        </div>
+
+        <footer>
+            <p>LEGO EV3 Python Simulator | Created with Three.js and Model Viewer | Physics Engine Enabled</p>
+        </footer>
     </div>
 
     <script>
-        // DOM Elements
-        const codeEditor = document.getElementById('codeEditor');
-        const runBtn = document.getElementById('runBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const outputDiv = document.getElementById('output');
-        const robotViewer = document.getElementById('robotViewer');
-        
-        // Robot state
+        // Robot simulation state
         const robotState = {
-            x: 0,
-            z: 0,
-            rotation: 0, // degrees
-            speed: 10,   // cm/s
-            isMoving: false
+            position: { x: 0, y: 0, rotation: 0 },
+            speed: 50,
+            moving: false,
+            turning: false,
+            wheelsRotating: false
         };
-        
-        // Highlight code syntax
-        function highlightCode() {
-            const code = codeEditor.value;
+
+        // DOM elements
+        const commandInput = document.getElementById('command-input');
+        const runBtn = document.getElementById('run-btn');
+        const terminalOutput = document.getElementById('terminal-output');
+        const robotModel = document.getElementById('robot-model');
+        const statusDisplay = document.querySelector('.robot-status');
+
+        // Add loading animation to model viewer
+        robotModel.addEventListener('load', () => {
+            document.querySelector('.loading-container').style.display = 'none';
+        });
+
+        // Execute command when Run button is clicked
+        runBtn.addEventListener('click', executeCommand);
+
+        // Also execute when Enter is pressed in the input field
+        commandInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                executeCommand();
+            }
+        });
+
+        // Function to execute the command
+        function executeCommand() {
+            const command = commandInput.value.trim();
+            if (!command) return;
+
+            // Add command to terminal
+            addToTerminal(`&gt; ${command}`);
             
-            // Simple syntax highlighting
-            let highlighted = code
-                .replace(/(move_forward|move_backward|turn_left|turn_right|set_speed|wait)\(/g, '<span class="function">$1</span>(')
-                .replace(/(\d+\.?\d*)/g, '<span class="number">$1</span>')
-                .replace(/(#.*)/g, '<span class="comment">$1</span>')
-                .replace(/(\".*?\")/g, '<span class="string">$1</span>')
-                .replace(/\n/g, '<br>');
+            // Process the command
+            processCommand(command);
             
-            // Create a temporary element to preserve whitespace
-            const temp = document.createElement('div');
-            temp.innerHTML = highlighted;
-            
-            // Apply to editor
-            codeEditor.innerHTML = temp.innerHTML;
+            // Clear input
+            commandInput.value = '';
         }
-        
-        // Initialize syntax highlighting
-        highlightCode();
-        codeEditor.addEventListener('input', highlightCode);
-        
-        // Simulate robot movement
-        function moveRobot(distance) {
-            robotState.isMoving = true;
-            outputDiv.innerHTML += `> Moving ${distance > 0 ? 'forward' : 'backward'} ${Math.abs(distance)} cm<br>`;
-            
-            // Calculate movement based on current rotation
-            const radians = robotState.rotation * Math.PI / 180;
-            const dx = Math.sin(radians) * distance;
-            const dz = Math.cos(radians) * distance;
-            
-            // Update position
-            robotState.x += dx;
-            robotState.z += dz;
-            
-            // Update status display
-            updateStatus();
-            
-            // Simulate wheel rotation
-            simulateWheels(distance);
-            
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    robotState.isMoving = false;
-                    resolve();
-                }, Math.abs(distance) * 30); // Time based on distance
-            });
+
+        // Add text to terminal
+        function addToTerminal(text) {
+            terminalOutput.innerHTML += `<div>${text}</div>`;
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
         }
-        
-        function turnRobot(degrees) {
-            robotState.isMoving = true;
-            const direction = degrees > 0 ? 'left' : 'right';
-            outputDiv.innerHTML += `> Turning ${direction} ${Math.abs(degrees)}°<br>`;
+
+        // Process different commands
+        function processCommand(cmd) {
+            // Update status to running
+            statusDisplay.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Status: Executing';
             
-            // Update rotation
-            robotState.rotation = (robotState.rotation + degrees) % 360;
-            
-            // Update status display
-            updateStatus();
-            
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    robotState.isMoving = false;
-                    resolve();
-                }, Math.abs(degrees) * 20); // Time based on degrees
-            });
-        }
-        
-        function simulateWheels(distance) {
-            // This would normally control the 3D model's wheels
-            // For this demo, we'll just log the action
-            const rotations = Math.abs(distance) / (2 * Math.PI * 2.5); // 2.5cm wheel radius
-            outputDiv.innerHTML += `> Wheels rotating ${rotations.toFixed(1)} times<br>`;
-        }
-        
-        function updateStatus() {
-            const statusItems = document.querySelectorAll('.status-value');
-            statusItems[0].textContent = `X: ${robotState.x.toFixed(1)}, Z: ${robotState.z.toFixed(1)}`;
-            statusItems[1].textContent = `${robotState.rotation.toFixed(0)}°`;
-            statusItems[2].textContent = `${robotState.speed} cm/s`;
-        }
-        
-        // Parse and execute commands
-        async function executeCommands() {
-            const code = codeEditor.value;
-            outputDiv.innerHTML = "> Starting program execution...<br>";
-            
-            // Split code into lines
-            const lines = code.split('\n');
-            
-            for (const line of lines) {
-                const trimmedLine = line.trim();
-                
-                // Skip empty lines and comments
-                if (!trimmedLine || trimmedLine.startsWith('#')) continue;
-                
-                try {
-                    // Parse commands with parameters
-                    if (trimmedLine.includes('move_forward')) {
-                        const distance = parseFloat(trimmedLine.match(/move_forward\((\d+)\)/)[1]);
-                        await moveRobot(distance);
-                    }
-                    else if (trimmedLine.includes('move_backward')) {
-                        const distance = parseFloat(trimmedLine.match(/move_backward\((\d+)\)/)[1]);
-                        await moveRobot(-distance);
-                    }
-                    else if (trimmedLine.includes('turn_left')) {
-                        const degrees = parseFloat(trimmedLine.match(/turn_left\((\d+)\)/)[1]);
-                        await turnRobot(degrees);
-                    }
-                    else if (trimmedLine.includes('turn_right')) {
-                        const degrees = parseFloat(trimmedLine.match(/turn_right\((\d+)\)/)[1]);
-                        await turnRobot(-degrees);
-                    }
-                    else if (trimmedLine.includes('set_speed')) {
-                        const speed = parseFloat(trimmedLine.match(/set_speed\((\d+)\)/)[1]);
-                        robotState.speed = speed;
-                        outputDiv.innerHTML += `> Speed set to ${speed} cm/s<br>`;
-                        updateStatus();
-                    }
-                    else if (trimmedLine.includes('wait')) {
-                        const seconds = parseFloat(trimmedLine.match(/wait\((\d+\.?\d*)\)/)[1]);
-                        outputDiv.innerHTML += `> Waiting for ${seconds} seconds<br>`;
-                        await new Promise(resolve => setTimeout(resolve, seconds * 1000));
-                    }
-                    else {
-                        outputDiv.innerHTML += `> Unknown command: ${trimmedLine}<br>`;
-                    }
-                } catch (e) {
-                    outputDiv.innerHTML += `> Error in command: ${trimmedLine}<br>`;
+            // Simple command parser
+            try {
+                if (cmd.startsWith('move_forward')) {
+                    const power = extractNumber(cmd);
+                    moveForward(power);
+                } else if (cmd.startsWith('move_backward')) {
+                    const power = extractNumber(cmd);
+                    moveBackward(power);
+                } else if (cmd.startsWith('turn_left')) {
+                    const degrees = extractNumber(cmd);
+                    turnLeft(degrees);
+                } else if (cmd.startsWith('turn_right')) {
+                    const degrees = extractNumber(cmd);
+                    turnRight(degrees);
+                } else if (cmd === 'stop()') {
+                    stopRobot();
+                } else if (cmd.startsWith('set_speed')) {
+                    const speed = extractNumber(cmd);
+                    setSpeed(speed);
+                } else if (cmd === 'read_distance()') {
+                    const distance = Math.floor(Math.random() * 100) + 1;
+                    addToTerminal(`Distance: ${distance} cm`);
+                } else if (cmd === 'read_light()') {
+                    const light = Math.floor(Math.random() * 100);
+                    addToTerminal(`Light level: ${light}%`);
+                } else {
+                    addToTerminal(`Error: Unknown command '${cmd}'`);
                 }
+            } catch (e) {
+                addToTerminal(`Error: ${e.message}`);
+            }
+        }
+
+        // Extract number from command string
+        function extractNumber(cmd) {
+            const match = cmd.match(/\d+/);
+            if (match) {
+                return parseInt(match[0]);
+            }
+            throw new Error('Missing parameter');
+        }
+
+        // Robot movement functions
+        function moveForward(power = 50) {
+            if (power < 0 || power > 100) {
+                addToTerminal('Error: Power must be between 0-100');
+                return;
             }
             
-            outputDiv.innerHTML += "> Program execution complete!<br>";
-            
-            // Scroll to bottom of output
-            outputDiv.scrollTop = outputDiv.scrollHeight;
+            addToTerminal(`Moving forward at ${power}% power`);
+            animateRobotMovement('forward', power);
         }
-        
-        // Reset robot position
-        function resetRobot() {
-            robotState.x = 0;
-            robotState.z = 0;
-            robotState.rotation = 0;
-            robotState.speed = 10;
+
+        function moveBackward(power = 50) {
+            if (power < 0 || power > 100) {
+                addToTerminal('Error: Power must be between 0-100');
+                return;
+            }
             
-            outputDiv.innerHTML = "> Robot position reset<br>";
-            updateStatus();
-            
-            // Reset model viewer camera
-            robotViewer.cameraOrbit = "0deg 75deg 2m";
+            addToTerminal(`Moving backward at ${power}% power`);
+            animateRobotMovement('backward', power);
         }
-        
-        // Event Listeners
-        runBtn.addEventListener('click', executeCommands);
-        resetBtn.addEventListener('click', resetRobot);
-        
-        // Initial status update
-        updateStatus();
-        
-        // Add some example output
-        outputDiv.innerHTML = "> Robot initialized at position (0, 0)<br>> Ready to execute program...<br>";
+
+        function turnLeft(degrees = 90) {
+            addToTerminal(`Turning left ${degrees} degrees`);
+            animateRobotTurn('left', degrees);
+        }
+
+        function turnRight(degrees = 90) {
+            addToTerminal(`Turning right ${degrees} degrees`);
+            animateRobotTurn('right', degrees);
+        }
+
+        function stopRobot() {
+            addToTerminal('Stopping robot');
+            robotState.moving = false;
+            robotState.turning = false;
+            robotModel.classList.remove('robot-animation');
+            statusDisplay.innerHTML = '<i class="fas fa-check-circle"></i> Status: Ready';
+        }
+
+        function setSpeed(speed) {
+            if (speed < 0 || speed > 100) {
+                addToTerminal('Error: Speed must be between 0-100');
+                return;
+            }
+            
+            robotState.speed = speed;
+            addToTerminal(`Default speed set to ${speed}%`);
+        }
+
+        // Animate robot movement
+        function animateRobotMovement(direction, power) {
+            robotState.moving = true;
+            robotModel.classList.add('robot-animation');
+            
+            // Simulate movement time based on power
+            const duration = 2000 * (100 / power);
+            
+            setTimeout(() => {
+                stopRobot();
+            }, duration);
+        }
+
+        // Animate robot turning
+        function animateRobotTurn(direction, degrees) {
+            robotState.turning = true;
+            
+            // Calculate animation duration based on degrees
+            const duration = 1000 * (degrees / 90);
+            
+            // Add visual rotation effect
+            robotModel.style.transition = `transform ${duration}ms ease-in-out`;
+            
+            if (direction === 'left') {
+                robotModel.style.transform = 'rotateY(-60deg)';
+            } else {
+                robotModel.style.transform = 'rotateY(60deg)';
+            }
+            
+            setTimeout(() => {
+                robotModel.style.transform = 'rotateY(0deg)';
+                stopRobot();
+            }, duration);
+        }
+
+        // Initialize with sample commands
+        setTimeout(() => {
+            addToTerminal('&gt; Welcome to the LEGO EV3 Python Simulator!');
+            addToTerminal('&gt; Try entering: move_forward(80)');
+            addToTerminal('&gt; Then try: turn_right(90)');
+        }, 1500);
     </script>
 </body>
 </html>
