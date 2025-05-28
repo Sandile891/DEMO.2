@@ -73,12 +73,11 @@
         ar
         ar-modes="webxr scene-viewer quick-look"
         environment-image="neutral"
-        auto-rotate
         camera-controls
         shadow-intensity="1"
         exposure="0.8"
         camera-orbit="0deg 75deg 2m"
-        animation-name="none"
+        animation-name=""
         autoplay
     >
     </model-viewer>
@@ -115,17 +114,17 @@
             switch (command) {
                 case 'move_forward()':
                     output.innerHTML += "Robot moves forward\n";
-                    animateCameraOrbit(-0.2);
+                    moveForward();
                     triggerWheelRotation();
                     break;
                 case 'turn_left()':
                     output.innerHTML += "Robot turns left\n";
-                    rotateRobot(-45);
+                    turn(-45);
                     triggerWheelRotation();
                     break;
                 case 'turn_right()':
                     output.innerHTML += "Robot turns right\n";
-                    rotateRobot(45);
+                    turn(45);
                     triggerWheelRotation();
                     break;
                 default:
@@ -133,25 +132,27 @@
             }
         }
 
-        function animateCameraOrbit(radiusChange) {
-            radius += radiusChange;
-            robot.setAttribute("camera-orbit", `${azimuth}deg 75deg ${radius}m`);
+        function moveForward() {
+            radius -= 0.2;
+            updateCameraOrbit();
         }
 
-        function rotateRobot(deg) {
+        function turn(deg) {
             azimuth += deg;
-            robot.setAttribute("camera-orbit", `${azimuth}deg 75deg ${radius}m`);
+            updateCameraOrbit();
+        }
+
+        function updateCameraOrbit() {
+            robot.cameraOrbit = `${azimuth}deg 75deg ${radius}m`;
         }
 
         function triggerWheelRotation() {
-            // Play animation if your GLB file has a wheel animation
-            robot.animationName = "WheelSpin"; // replace with your animation name if different
+            // If your GLB file has named animations, you can trigger them
+            robot.animationName = robot.availableAnimations ? robot.availableAnimations[0] : '';
             robot.play();
-            setTimeout(() => {
-                robot.pause();
-            }, 800);
         }
     </script>
 </body>
 </html>
+
 
