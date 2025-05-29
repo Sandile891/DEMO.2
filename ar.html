@@ -1,140 +1,794 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Three.js Robot Simulation</title>
-  <style>
-    body { margin: 0; overflow: hidden; font-family: sans-serif; }
-    #controls { position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 5px; }
-    #code { width: 300px; height: 150px; }
-    #output { margin-top: 10px; height: 100px; overflow-y: auto; background: #000; color: #0f0; padding: 5px; font-family: monospace; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Programming Terminal - Three.js Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            color: #e6e6e6;
+        }
+        
+        #header {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(79, 172, 254, 0.3);
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            padding: 15px;
+            gap: 15px;
+            height: calc(100% - 130px);
+        }
+        
+        .panel {
+            background: rgba(30, 30, 46, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        #scene-container {
+            flex: 3;
+            position: relative;
+        }
+        
+        #three-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+        
+        #controls-container {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .code-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .code-editor label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #64b5f6;
+        }
+        
+        textarea {
+            flex: 1;
+            background: rgba(20, 20, 35, 0.8);
+            color: #e6e6e6;
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            border-color: #64b5f6;
+            box-shadow: 0 0 10px rgba(100, 181, 246, 0.3);
+        }
+        
+        .controls-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(to right, #2193b0, #6dd5ed);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        #run-btn {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+        
+        #reset-btn {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+        }
+        
+        .output {
+            flex: 1;
+            background: rgba(20, 20, 35, 0.8);
+            border-radius: 6px;
+            padding: 12px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+            border: 1px solid rgba(100, 181, 246, 0.3);
+        }
+        
+        .output-line {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+        
+        .output-line.success {
+            color: #76ff03;
+        }
+        
+        .output-line.error {
+            color: #ff5252;
+        }
+        
+        .output-line.info {
+            color: #64b5f6;
+        }
+        
+        .output-line.command {
+            color: #ffca28;
+        }
+        
+        #status-bar {
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-value {
+            font-weight: 600;
+            color: #64b5f6;
+        }
+        
+        .grid {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 200px;
+            height: 200px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .grid-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .grid-x {
+            width: 100%;
+            height: 1px;
+            top: 50%;
+        }
+        
+        .grid-y {
+            width: 1px;
+            height: 100%;
+            left: 50%;
+        }
+        
+        .robot-marker {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #ff5252;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(255, 82, 82, 0.7);
+        }
+        
+        .instructions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            width: 250px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #64b5f6;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .instructions code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #ffca28;
+        }
+    </style>
 </head>
 <body>
-  <div id="controls">
-    <textarea id="code" placeholder="Enter commands like:\nmove_forward()\nturn_left()"></textarea><br/>
-    <button onclick="runCode()">Run</button>
-    <div id="output"></div>
-  </div>
-  <canvas id="three-canvas"></canvas>
+    <div id="header">
+        <h1>Robot Programming Terminal</h1>
+    </div>
+    
+    <div class="container">
+        <div class="panel" id="scene-container">
+            <canvas id="three-canvas"></canvas>
+            <div class="instructions">
+                <h3>Available Commands</h3>
+                <ul>
+                    <li><code>move_forward()</code> - Move robot forward</li>
+                    <li><code>move_backward()</code> - Move robot backward</li>
+                    <li><code>turn_left()</code> - Rotate left 90 degrees</li>
+                    <li><code>turn_right()</code> - Rotate right 90 degrees</li>
+                    <li><code>rotate_wheel("front_left", 45)</code> - Rotate a specific wheel</li>
+                </ul>
+            </div>
+            <div class="grid">
+                <div class="grid-line grid-x"></div>
+                <div class="grid-line grid-y"></div>
+                <div class="robot-marker" id="robot-marker"></div>
+            </div>
+        </div>
+        
+        <div class="panel" id="controls-container">
+            <div class="code-editor">
+                <label>Robot Control Program (Python-like syntax):</label>
+                <textarea id="code"># Robot control program
+move_forward()
+turn_right()
+move_forward()
+turn_left()
+move_forward()
+rotate_wheel("front_left", 45)
+rotate_wheel("front_right", 45)
+turn_left()
+move_backward()</textarea>
+            </div>
+            
+            <div class="controls-row">
+                <button id="run-btn" onclick="runCode()">Run Program</button>
+                <button id="reset-btn" onclick="resetSimulation()">Reset Simulation</button>
+            </div>
+            
+            <div class="output-container">
+                <label>Execution Output:</label>
+                <div class="output" id="output">
+                    <div class="output-line info">Ready to execute robot program...</div>
+                    <div class="output-line info">Use commands like move_forward(), turn_left(), etc.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="status-bar">
+        <div class="status-item">
+            <span>Position:</span>
+            <span class="status-value" id="position-status">X: 0.00, Z: 0.00</span>
+        </div>
+        <div class="status-item">
+            <span>Rotation:</span>
+            <span class="status-value" id="rotation-status">0.00°</span>
+        </div>
+        <div class="status-item">
+            <span>Wheel Angles:</span>
+            <span class="status-value" id="wheel-status">FL: 0°, FR: 0°, RL: 0°, RR: 0°</span>
+        </div>
+    </div>
 
-  <!-- Include Three.js and GLTFLoader -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script>
-    let scene, camera, renderer, robot, mixer;
-    let wheels = {};
-    let currentRotation = 0;
-    let currentPosition = new THREE.Vector3(0, 0, 0);
-
-    init();
-
-    function init() {
-      // Scene and Camera
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-      camera.position.set(0, 2, 5);
-
-      // Renderer
-      renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
-
-      // Lighting
-      const light = new THREE.HemisphereLight(0xffffff, 0x444444);
-      light.position.set(0, 20, 0);
-      scene.add(light);
-
-      // Load Robot Model
-      const loader = new THREE.GLTFLoader();
-      loader.load('lego.glb', function(gltf) {
-        robot = gltf.scene;
-        scene.add(robot);
-
-        // Identify wheels by name
-        robot.traverse(function(child) {
-          if (child.isMesh) {
-            if (child.name === 'wheel_front_left') wheels.frontLeft = child;
-            if (child.name === 'wheel_front_right') wheels.frontRight = child;
-            if (child.name === 'wheel_back_left') wheels.backLeft = child;
-            if (child.name === 'wheel_back_right') wheels.backRight = child;
-          }
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a1a);
+        scene.fog = new THREE.Fog(0x0a0a1a, 10, 25);
+        
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / (window.innerHeight/2), 0.1, 1000);
+        camera.position.set(0, 5, 8);
+        
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('three-canvas'),
+            antialias: true 
         });
-
+        renderer.setSize(document.getElementById('scene-container').clientWidth, 
+                        document.getElementById('scene-container').clientHeight);
+        renderer.shadowMap.enabled = true;
+        
+        // Add lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 10, 7);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 1024;
+        directionalLight.shadow.mapSize.height = 1024;
+        scene.add(directionalLight);
+        
+        const hemisphereLight = new THREE.HemisphereLight(0x80deea, 0x4db6ac, 0.3);
+        scene.add(hemisphereLight);
+        
+        // Add floor
+        const floorGeometry = new THREE.PlaneGeometry(30, 30);
+        const floorMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x1e3f5a,
+            roughness: 0.8,
+            metalness: 0.2
+        });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+        
+        // Add grid helper
+        const gridHelper = new THREE.GridHelper(30, 30, 0x3d3d5c, 0x252540);
+        gridHelper.position.y = 0.01;
+        scene.add(gridHelper);
+        
+        // Create a simple robot model with wheels
+        const robotGroup = new THREE.Group();
+        scene.add(robotGroup);
+        
+        // Robot body
+        const bodyGeometry = new THREE.BoxGeometry(1.5, 0.8, 2);
+        const bodyMaterial = new THREE.MeshPhongMaterial({ 
+            color: 0x4a4a8c,
+            shininess: 50
+        });
+        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+        body.castShadow = true;
+        body.receiveShadow = true;
+        body.position.y = 0.4;
+        robotGroup.add(body);
+        
+        // Robot head
+        const headGeometry = new THREE.BoxGeometry(0.8, 0.6, 0.8);
+        const headMaterial = new THREE.MeshPhongMaterial({ 
+            color: 0x8a4a8c,
+            shininess: 50
+        });
+        const head = new THREE.Mesh(headGeometry, headMaterial);
+        head.castShadow = true;
+        head.position.y = 1.1;
+        head.position.z = -0.3;
+        robotGroup.add(head);
+        
+        // Eyes
+        const eyeGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+        const eyeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        
+        const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+        leftEye.position.set(-0.2, 1.1, -0.65);
+        robotGroup.add(leftEye);
+        
+        const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+        rightEye.position.set(0.2, 1.1, -0.65);
+        robotGroup.add(rightEye);
+        
+        // Wheels
+        const wheels = {
+            'front_left': createWheel(-0.8, 0.3, 0.8),
+            'front_right': createWheel(0.8, 0.3, 0.8),
+            'rear_left': createWheel(-0.8, 0.3, -0.8),
+            'rear_right': createWheel(0.8, 0.3, -0.8)
+        };
+        
+        function createWheel(x, y, z) {
+            const wheelGroup = new THREE.Group();
+            wheelGroup.position.set(x, y, z);
+            
+            const wheelGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.2, 16);
+            wheelGeometry.rotateZ(Math.PI / 2);
+            const wheelMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x444444,
+                shininess: 30
+            });
+            const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+            wheel.castShadow = true;
+            wheel.receiveShadow = true;
+            
+            wheelGroup.add(wheel);
+            robotGroup.add(wheelGroup);
+            
+            return { group: wheelGroup, wheel: wheel, rotation: 0 };
+        }
+        
+        // Position the robot
+        robotGroup.position.y = 0.8;
+        
+        // Add some obstacles
+        function createObstacle(x, z, size) {
+            const geometry = new THREE.BoxGeometry(size, 0.5, size);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: 0xd35400,
+                shininess: 30
+            });
+            const obstacle = new THREE.Mesh(geometry, material);
+            obstacle.position.set(x, 0.25, z);
+            obstacle.castShadow = true;
+            obstacle.receiveShadow = true;
+            scene.add(obstacle);
+        }
+        
+        // Create some obstacles
+        createObstacle(3, 3, 1);
+        createObstacle(-2, 4, 1.5);
+        createObstacle(4, -3, 1);
+        createObstacle(-3, -2, 1.2);
+        
+        // Add orbit controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = false;
+        controls.minDistance = 3;
+        controls.maxDistance = 20;
+        
+        // Robot state
+        const robotState = {
+            position: new THREE.Vector3(0, 0, 0),
+            rotation: 0, // in degrees
+            wheelRotations: {
+                'front_left': 0,
+                'front_right': 0,
+                'rear_left': 0,
+                'rear_right': 0
+            },
+            moving: false
+        };
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            controls.update();
+            renderer.render(scene, camera);
+            
+            // Update status bar
+            document.getElementById('position-status').textContent = 
+                `X: ${robotState.position.x.toFixed(2)}, Z: ${robotState.position.z.toFixed(2)}`;
+            
+            document.getElementById('rotation-status').textContent = 
+                `${robotState.rotation.toFixed(2)}°`;
+            
+            document.getElementById('wheel-status').textContent = 
+                `FL: ${Math.round(robotState.wheelRotations.front_left)}°, ` +
+                `FR: ${Math.round(robotState.wheelRotations.front_right)}°, ` +
+                `RL: ${Math.round(robotState.wheelRotations.rear_left)}°, ` +
+                `RR: ${Math.round(robotState.wheelRotations.rear_right)}°`;
+            
+            // Update robot marker position on grid
+            const marker = document.getElementById('robot-marker');
+            marker.style.left = `${50 + robotState.position.x * 10}%`;
+            marker.style.top = `${50 - robotState.position.z * 10}%`;
+        }
+        
         animate();
-      }, undefined, function(error) {
-        console.error(error);
-      });
-
-      window.addEventListener('resize', onWindowResize, false);
-    }
-
-    function onWindowResize() {
-      camera.aspect = window.innerWidth/window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    }
-
-    function runCode() {
-      const output = document.getElementById('output');
-      output.innerHTML = '';
-      const code = document.getElementById('code').value;
-      const lines = code.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-
-      let delay = 0;
-      lines.forEach((line, index) => {
-        setTimeout(() => {
-          interpretCommand(line);
-        }, delay);
-        delay += 1000;
-      });
-    }
-
-    function interpretCommand(command) {
-      const output = document.getElementById('output');
-      switch(command) {
-        case 'move_forward()':
-          output.innerHTML += 'Moving forward\n';
-          moveForward();
-          break;
-        case 'turn_left()':
-          output.innerHTML += 'Turning left\n';
-          rotateRobot(-90);
-          break;
-        case 'turn_right()':
-          output.innerHTML += 'Turning right\n';
-          rotateRobot(90);
-          break;
-        default:
-          output.innerHTML += `Unknown command: ${command}\n`;
-      }
-    }
-
-    function moveForward() {
-      // Move robot forward in the direction it's facing
-      const angle = THREE.MathUtils.degToRad(currentRotation);
-      const dx = Math.sin(angle);
-      const dz = Math.cos(angle);
-      currentPosition.x += dx;
-      currentPosition.z += dz;
-      robot.position.set(currentPosition.x, currentPosition.y, currentPosition.z);
-
-      // Rotate wheels
-      const rotationAmount = THREE.MathUtils.degToRad(360);
-      for (let key in wheels) {
-        wheels[key].rotation.x += rotationAmount;
-      }
-    }
-
-    function rotateRobot(degrees) {
-      currentRotation += degrees;
-      robot.rotation.y = THREE.MathUtils.degToRad(currentRotation);
-    }
-  </script>
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = document.getElementById('scene-container').clientWidth / 
+                            document.getElementById('scene-container').clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(document.getElementById('scene-container').clientWidth, 
+                            document.getElementById('scene-container').clientHeight);
+        });
+        
+        // Movement functions
+        function moveForward() {
+            if (robotState.moving) return;
+            robotState.moving = true;
+            
+            const startPos = robotState.position.clone();
+            const angle = robotState.rotation * Math.PI / 180;
+            const endPos = new THREE.Vector3(
+                startPos.x + Math.sin(angle),
+                startPos.y,
+                startPos.z + Math.cos(angle)
+            );
+            
+            // Simulate wheel rotation during movement
+            const wheelRotationSpeed = 20;
+            
+            const startTime = Date.now();
+            const duration = 1500; // ms
+            
+            function updateMovement() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Interpolate position
+                robotState.position.lerpVectors(startPos, endPos, progress);
+                robotGroup.position.copy(robotState.position);
+                
+                // Rotate wheels
+                const rotationAmount = progress * 360 * 2; // 2 full rotations
+                rotateWheels(rotationAmount);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateMovement);
+                } else {
+                    robotState.position.copy(endPos);
+                    robotState.moving = false;
+                }
+            }
+            
+            updateMovement();
+        }
+        
+        function moveBackward() {
+            if (robotState.moving) return;
+            robotState.moving = true;
+            
+            const startPos = robotState.position.clone();
+            const angle = robotState.rotation * Math.PI / 180;
+            const endPos = new THREE.Vector3(
+                startPos.x - Math.sin(angle),
+                startPos.y,
+                startPos.z - Math.cos(angle)
+            );
+            
+            // Simulate wheel rotation during movement
+            const wheelRotationSpeed = -20;
+            
+            const startTime = Date.now();
+            const duration = 1500; // ms
+            
+            function updateMovement() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Interpolate position
+                robotState.position.lerpVectors(startPos, endPos, progress);
+                robotGroup.position.copy(robotState.position);
+                
+                // Rotate wheels
+                const rotationAmount = -progress * 360 * 2; // 2 full rotations backward
+                rotateWheels(rotationAmount);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateMovement);
+                } else {
+                    robotState.position.copy(endPos);
+                    robotState.moving = false;
+                }
+            }
+            
+            updateMovement();
+        }
+        
+        function rotateWheels(amount) {
+            for (const wheelKey in wheels) {
+                const wheel = wheels[wheelKey];
+                wheel.wheel.rotation.y = amount * Math.PI / 180;
+                robotState.wheelRotations[wheelKey] = amount % 360;
+            }
+        }
+        
+        function rotateRobot(degrees) {
+            if (robotState.moving) return;
+            robotState.moving = true;
+            
+            const startRotation = robotState.rotation;
+            const endRotation = startRotation + degrees;
+            
+            const startTime = Date.now();
+            const duration = 1000; // ms
+            
+            function updateRotation() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Interpolate rotation
+                robotState.rotation = startRotation + progress * degrees;
+                robotGroup.rotation.y = robotState.rotation * Math.PI / 180;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateRotation);
+                } else {
+                    robotState.rotation = endRotation;
+                    robotState.moving = false;
+                }
+            }
+            
+            updateRotation();
+        }
+        
+        function rotateIndividualWheel(wheelName, degrees) {
+            if (robotState.moving) return;
+            robotState.moving = true;
+            
+            const wheel = wheels[wheelName];
+            if (!wheel) return;
+            
+            const startRotation = robotState.wheelRotations[wheelName];
+            const endRotation = startRotation + degrees;
+            
+            const startTime = Date.now();
+            const duration = 800; // ms
+            
+            function updateWheelRotation() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Interpolate wheel rotation
+                const currentRotation = startRotation + progress * degrees;
+                wheel.wheel.rotation.y = currentRotation * Math.PI / 180;
+                robotState.wheelRotations[wheelName] = currentRotation;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateWheelRotation);
+                } else {
+                    robotState.wheelRotations[wheelName] = endRotation;
+                    robotState.moving = false;
+                }
+            }
+            
+            updateWheelRotation();
+        }
+        
+        // Command interpretation
+        const output = document.getElementById("output");
+        
+        function runCode() {
+            output.innerHTML = '<div class="output-line info">Executing program...</div>';
+            const code = document.getElementById("code").value;
+            const lines = code.split('\n');
+            
+            let delay = 0;
+            lines.forEach((line, index) => {
+                setTimeout(() => {
+                    interpretCommand(line.trim());
+                }, delay);
+                delay += 1600; // Delay between commands
+            });
+        }
+        
+        function interpretCommand(command) {
+            if (!command || command.startsWith('#') || command === '') {
+                return;
+            }
+            
+            try {
+                if (command === 'move_forward()') {
+                    output.innerHTML += `<div class="output-line command">> ${command}</div>`;
+                    output.innerHTML += `<div class="output-line success">Robot moving forward</div>`;
+                    moveForward();
+                } 
+                else if (command === 'move_backward()') {
+                    output.innerHTML += `<div class="output-line command">> ${command}</div>`;
+                    output.innerHTML += `<div class="output-line success">Robot moving backward</div>`;
+                    moveBackward();
+                } 
+                else if (command === 'turn_left()') {
+                    output.innerHTML += `<div class="output-line command">> ${command}</div>`;
+                    output.innerHTML += `<div class="output-line success">Robot turning left</div>`;
+                    rotateRobot(-90);
+                } 
+                else if (command === 'turn_right()') {
+                    output.innerHTML += `<div class="output-line command">> ${command}</div>`;
+                    output.innerHTML += `<div class="output-line success">Robot turning right</div>`;
+                    rotateRobot(90);
+                } 
+                else if (command.startsWith('rotate_wheel')) {
+                    output.innerHTML += `<div class="output-line command">> ${command}</div>`;
+                    
+                    // Extract parameters
+                    const regex = /rotate_wheel\("([^"]+)",\s*([-0-9.]+)\)/;
+                    const match = command.match(regex);
+                    
+                    if (match && match.length === 3) {
+                        const wheelName = match[1];
+                        const degrees = parseFloat(match[2]);
+                        
+                        if (wheels[wheelName]) {
+                            output.innerHTML += `<div class="output-line success">Rotating ${wheelName} wheel by ${degrees}°</div>`;
+                            rotateIndividualWheel(wheelName, degrees);
+                        } else {
+                            output.innerHTML += `<div class="output-line error">Error: Invalid wheel name '${wheelName}'</div>`;
+                        }
+                    } else {
+                        output.innerHTML += `<div class="output-line error">Error: Invalid rotate_wheel command format</div>`;
+                    }
+                } 
+                else {
+                    output.innerHTML += `<div class="output-line command">> ${command}</div>`;
+                    output.innerHTML += `<div class="output-line error">Error: Unknown command</div>`;
+                }
+            } catch (e) {
+                output.innerHTML += `<div class="output-line error">Error: ${e.message}</div>`;
+            }
+            
+            // Scroll to bottom
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function resetSimulation() {
+            robotState.position.set(0, 0, 0);
+            robotState.rotation = 0;
+            
+            for (const wheelKey in robotState.wheelRotations) {
+                robotState.wheelRotations[wheelKey] = 0;
+            }
+            
+            robotGroup.position.copy(robotState.position);
+            robotGroup.rotation.y = robotState.rotation * Math.PI / 180;
+            
+            // Reset wheel rotations
+            for (const wheelKey in wheels) {
+                wheels[wheelKey].wheel.rotation.y = 0;
+            }
+            
+            // Reset camera
+            camera.position.set(0, 5, 8);
+            camera.lookAt(0, 0, 0);
+            controls.reset();
+            
+            output.innerHTML = '<div class="output-line success">Simulation has been reset</div>';
+        }
+        
+        // Initialize
+        resetSimulation();
+    </script>
 </body>
 </html>
