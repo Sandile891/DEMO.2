@@ -1,150 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robot Programming Terminal - Simulated Movement</title>
-
-    <!-- Model Viewer Library -->
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    <style>
-        body {
-            margin: 0;
-            background-color: #fff6ff;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        model-viewer {
-            width: 100%;
-            height: 50vh;
-            --progress-bar-color: transparent;
-        }
-
-        .controls {
-            display: flex;
-            padding: 10px;
-            background-color: #eee;
-        }
-
-        textarea {
-            flex: 1;
-            height: 200px;
-            font-family: monospace;
-            font-size: 14px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            resize: none;
-        }
-
-        button {
-            margin-left: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .output {
-            background: #222;
-            color: #0f0;
-            padding: 10px;
-            font-family: monospace;
-            height: 150px;
-            overflow-y: auto;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Three.js Robot Simulation</title>
+  <style>
+    body { margin: 0; overflow: hidden; font-family: sans-serif; }
+    #controls { position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 5px; }
+    #code { width: 300px; height: 150px; }
+    #output { margin-top: 10px; height: 100px; overflow-y: auto; background: #000; color: #0f0; padding: 5px; font-family: monospace; }
+  </style>
 </head>
 <body>
-    <model-viewer 
-        id="robotModel"
-        src="lego.glb"
-        alt="3D Robot Model"
-        environment-image="neutral"
-        auto-rotate
-        camera-controls
-        shadow-intensity="1"
-        exposure="0.8"
-        camera-orbit="0deg 75deg 2m"
-        style="transition: transform 1s ease;"
-    >
-    </model-viewer>
+  <div id="controls">
+    <textarea id="code" placeholder="Enter commands like:\nmove_forward()\nturn_left()"></textarea><br/>
+    <button onclick="runCode()">Run</button>
+    <div id="output"></div>
+  </div>
+  <canvas id="three-canvas"></canvas>
 
-    <div class="controls">
-        <textarea id="code" placeholder="# Write your Python code here\nmove_forward()\nturn_left()\nmove_forward()\n"></textarea>
-        <button onclick="runCode()">Run</button>
-    </div>
+  <!-- Include Three.js and GLTFLoader -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script>
+    let scene, camera, renderer, robot, mixer;
+    let wheels = {};
+    let currentRotation = 0;
+    let currentPosition = new THREE.Vector3(0, 0, 0);
 
-    <div class="output" id="output"></div>
+    init();
 
-    <script>
-        const output = document.getElementById("output");
-        const robot = document.getElementById("robotModel");
+    function init() {
+      // Scene and Camera
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 2, 5);
 
-        let currentX = 0;
-        let currentZ = 0;
-        let currentRotation = 0;
+      // Renderer
+      renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
 
-        function runCode() {
-            output.innerHTML = "Executing...\n";
-            const code = document.getElementById("code").value;
-            const lines = code.split('\n');
+      // Lighting
+      const light = new THREE.HemisphereLight(0xffffff, 0x444444);
+      light.position.set(0, 20, 0);
+      scene.add(light);
 
-            let delay = 0;
-            lines.forEach((line, index) => {
-                setTimeout(() => {
-                    interpretCommand(line.trim());
-                }, delay);
-                delay += 1000;
-            });
-        }
+      // Load Robot Model
+      const loader = new THREE.GLTFLoader();
+      loader.load('lego.glb', function(gltf) {
+        robot = gltf.scene;
+        scene.add(robot);
 
-        function interpretCommand(command) {
-            switch (command) {
-                case 'move_forward()':
-                    output.innerHTML += "Robot moves forward\n";
-                    moveForward();
-                    break;
-                case 'turn_left()':
-                    output.innerHTML += "Robot turns left\n";
-                    rotateRobot(-90);
-                    break;
-                case 'turn_right()':
-                    output.innerHTML += "Robot turns right\n";
-                    rotateRobot(90);
-                    break;
-                default:
-                    output.innerHTML += `Unknown command: ${command}\n`;
-            }
-        }
+        // Identify wheels by name
+        robot.traverse(function(child) {
+          if (child.isMesh) {
+            if (child.name === 'wheel_front_left') wheels.frontLeft = child;
+            if (child.name === 'wheel_front_right') wheels.frontRight = child;
+            if (child.name === 'wheel_back_left') wheels.backLeft = child;
+            if (child.name === 'wheel_back_right') wheels.backRight = child;
+          }
+        });
 
-        function moveForward() {
-            // Move in the direction the robot is facing
-            let rad = currentRotation * (Math.PI / 180);
-            currentX += Math.sin(rad);
-            currentZ += Math.cos(rad);
+        animate();
+      }, undefined, function(error) {
+        console.error(error);
+      });
 
-            updateTransform();
-        }
+      window.addEventListener('resize', onWindowResize, false);
+    }
 
-        function rotateRobot(degrees) {
-            currentRotation += degrees;
-            updateTransform();
-        }
+    function onWindowResize() {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
 
-        function updateTransform() {
-            robot.style.transform = `translateX(${currentX * 50}px) translateZ(${currentZ * 50}px) rotateY(${currentRotation}deg)`;
-        }
-    </script>
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+
+    function runCode() {
+      const output = document.getElementById('output');
+      output.innerHTML = '';
+      const code = document.getElementById('code').value;
+      const lines = code.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+      let delay = 0;
+      lines.forEach((line, index) => {
+        setTimeout(() => {
+          interpretCommand(line);
+        }, delay);
+        delay += 1000;
+      });
+    }
+
+    function interpretCommand(command) {
+      const output = document.getElementById('output');
+      switch(command) {
+        case 'move_forward()':
+          output.innerHTML += 'Moving forward\n';
+          moveForward();
+          break;
+        case 'turn_left()':
+          output.innerHTML += 'Turning left\n';
+          rotateRobot(-90);
+          break;
+        case 'turn_right()':
+          output.innerHTML += 'Turning right\n';
+          rotateRobot(90);
+          break;
+        default:
+          output.innerHTML += `Unknown command: ${command}\n`;
+      }
+    }
+
+    function moveForward() {
+      // Move robot forward in the direction it's facing
+      const angle = THREE.MathUtils.degToRad(currentRotation);
+      const dx = Math.sin(angle);
+      const dz = Math.cos(angle);
+      currentPosition.x += dx;
+      currentPosition.z += dz;
+      robot.position.set(currentPosition.x, currentPosition.y, currentPosition.z);
+
+      // Rotate wheels
+      const rotationAmount = THREE.MathUtils.degToRad(360);
+      for (let key in wheels) {
+        wheels[key].rotation.x += rotationAmount;
+      }
+    }
+
+    function rotateRobot(degrees) {
+      currentRotation += degrees;
+      robot.rotation.y = THREE.MathUtils.degToRad(currentRotation);
+    }
+  </script>
 </body>
 </html>
