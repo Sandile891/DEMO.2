@@ -1,106 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>LEGO Car Simulator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Robot Programming Terminal</title>
+
+  <!-- Model Viewer Library -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
   <style>
-    body { margin: 0; overflow: hidden; }
-    canvas { display: block; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background-color: #fff6ff;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 50vh;
+      --progress-bar-color: transparent;
+    }
+
+    .controls {
+      display: flex;
+      padding: 10px;
+      background-color: #eee;
+      align-items: flex-start;
+    }
+
+    textarea {
+      flex: 1;
+      height: 200px;
+      font-family: monospace;
+      font-size: 14px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      resize: none;
+    }
+
+    button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .output {
+      background: #222;
+      color: #0f0;
+      padding: 10px;
+      font-family: monospace;
+      height: 150px;
+      overflow-y: auto;
+      white-space: pre-line;
+    }
   </style>
 </head>
 <body>
-<script type="module">
-  import * as THREE from 'https://cdn.skypack.dev/three@0.158.0';
-  import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader.js';
-  import { OrbitControls } from 'https://cdn.skypack.dev/three/examples/jsm/controls/OrbitControls.js';
+  <model-viewer 
+    id="robotModel"
+    src="lego.glb"
+    alt="3D Robot Model"
+    environment-image="neutral"
+    auto-rotate
+    camera-controls
+    shadow-intensity="1"
+    exposure="0.8"
+    camera-orbit="0deg 75deg 2m"
+  ></model-viewer>
 
-  let scene = new THREE.Scene();
-  let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-  let renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
+  <div class="controls">
+    <textarea id="code" placeholder="# Write your Python-like code\nmove_forward()\nturn_left()\nmove_forward()"></textarea>
+    <button onclick="runCode()">Run</button>
+  </div>
 
-  // Lights
-  const light = new THREE.DirectionalLight(0xffffff, 1);
-  light.position.set(5, 10, 7.5);
-  scene.add(light);
-  scene.add(new THREE.AmbientLight(0x404040));
+  <div class="output" id="output"></div>
 
-  // Controls
-  const controls = new OrbitControls(camera, renderer.domElement);
+  <script>
+    const output = document.getElementById("output");
+    const robot = document.getElementById("robotModel");
 
-  // Variables
-  let car, frontLeft, frontRight, rearLeft, rearRight;
-  let speed = 0;
-  let steerAngle = 0;
+    let posX = 0, posZ = 0, angle = 0; // degrees
 
-  // Load GLB Model
-  const loader = new GLTFLoader();
-  loader.load('lego.glb', function(gltf) {
-    car = gltf.scene;
-    scene.add(car);
-    car.position.y = 0;
+    const movementSpeed = 50; // pixels
+    const rotationSpeed = 90; // degrees
+    const commandDelay = 1000; // ms
 
-    // Try to find wheels by their names (adjust if needed)
-    frontLeft = car.getObjectByName('frontLeft') || car.getObjectByName('front_left');
-    frontRight = car.getObjectByName('frontRight') || car.getObjectByName('front_right');
-    rearLeft = car.getObjectByName('rearLeft') || car.getObjectByName('rear_left');
-    rearRight = car.getObjectByName('rearRight') || car.getObjectByName('rear_right');
+    function runCode() {
+      output.textContent = "Executing...\n";
+      const code = document.getElementById("code").value;
+      const commands = code.split("\n").map(c => c.trim()).filter(Boolean);
 
-    if (!frontLeft || !frontRight || !rearLeft || !rearRight) {
-      console.warn('Some wheels were not found. Check model part names in SketchUp.');
-    }
-  });
+      let i = 0;
 
-  // Camera
-  camera.position.set(0, 5, 10);
-  controls.update();
+      function runNextCommand() {
+        if (i >= commands.length) {
+          output.textContent += "✅ Finished\n";
+          return;
+        }
 
-  // Keyboard
-  const keys = {};
-  window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-  window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+        const command = commands[i++];
+        output.textContent += `▶ ${command}\n`;
+        interpretCommand(command);
 
-  // Animation loop
-  function animate() {
-    requestAnimationFrame(animate);
-
-    if (car) {
-      // Forward/backward speed
-      if (keys['w']) speed = Math.min(speed + 0.01, 0.2);
-      if (keys['s']) speed = Math.max(speed - 0.01, -0.2);
-      if (!keys['w'] && !keys['s']) speed *= 0.95;
-
-      // Steering
-      if (keys['a']) steerAngle = Math.min(steerAngle + 0.02, 0.4);
-      if (keys['d']) steerAngle = Math.max(steerAngle - 0.02, -0.4);
-      if (!keys['a'] && !keys['d']) steerAngle *= 0.9;
-
-      // Move car
-      car.rotation.y += steerAngle * speed * 0.5;
-      const forward = new THREE.Vector3(Math.sin(car.rotation.y), 0, Math.cos(car.rotation.y));
-      car.position.add(forward.multiplyScalar(speed));
-
-      // Rotate wheels
-      const wheelSpin = speed * 10;
-      if (rearLeft) rearLeft.rotation.x -= wheelSpin;
-      if (rearRight) rearRight.rotation.x -= wheelSpin;
-      if (frontLeft) {
-        frontLeft.rotation.x -= wheelSpin;
-        frontLeft.rotation.y = steerAngle;
+        setTimeout(runNextCommand, commandDelay);
       }
-      if (frontRight) {
-        frontRight.rotation.x -= wheelSpin;
-        frontRight.rotation.y = steerAngle;
+
+      runNextCommand();
+    }
+
+    function interpretCommand(command) {
+      if (command === "move_forward()") {
+        moveForward();
+      } else if (command === "turn_left()") {
+        rotate(-rotationSpeed);
+      } else if (command === "turn_right()") {
+        rotate(rotationSpeed);
+      } else {
+        output.textContent += `⚠ Unknown command: ${command}\n`;
       }
     }
 
-    controls.update();
-    renderer.render(scene, camera);
-  }
+    function moveForward() {
+      const rad = (angle * Math.PI) / 180;
+      posX += Math.sin(rad) * movementSpeed;
+      posZ += Math.cos(rad) * movementSpeed;
+      updateTransform();
+    }
 
-  animate();
-</script>
+    function rotate(deg) {
+      angle = (angle + deg) % 360;
+      updateTransform();
+    }
+
+    function updateTransform() {
+      robot.style.transform = `
+        translateX(${posX}px) 
+        translateZ(${posZ}px) 
+        rotateY(${angle}deg)
+      `;
+    }
+  </script>
 </body>
 </html>
 
